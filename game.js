@@ -375,10 +375,17 @@ class GameScene extends Phaser.Scene {
             this.updateBattleMessage('Leonardo threw a Pokéball!');
         }, 100);
         
-        // After pokeball animation, show capture sequence
+        // After pokeball reaches the bride, start wiggling
+        setTimeout(() => {
+            pokeball.classList.remove('pokeball-throw');
+            pokeball.classList.add('pokeball-wiggle');
+            this.updateBattleMessage('The Pokéball is wiggling...');
+        }, 1500);
+        
+        // After wiggling, show capture sequence
         setTimeout(() => {
             pokeball.style.display = 'none';
-            pokeball.classList.remove('pokeball-throw');
+            pokeball.classList.remove('pokeball-wiggle');
             
             // Add capture success animation to bride sprite
             brideSprite.classList.add('capture-success');
@@ -389,7 +396,7 @@ class GameScene extends Phaser.Scene {
                 this.captureBride();
             }, 2000);
             
-        }, 1500);
+        }, 3500);
     }
 
     captureBride() {

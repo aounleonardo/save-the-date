@@ -29,7 +29,7 @@ const GAME_CONFIG = {
     // Character positions and colors
     characters: {
         groom: {
-            startX: 100,
+            startX: 400,
             startY: 300,
             size: 30,
             speed: 200,

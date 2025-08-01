@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,31 +16,31 @@
             align-items: center;
             min-height: 100vh;
         }
-        
+
         h1 {
             color: white;
             text-align: center;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
-        
+
         #gameContainer {
             border: 3px solid #fff;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
             position: relative;
         }
-        
+
         #controls {
             margin-top: 20px;
             color: white;
             text-align: center;
         }
-        
+
         .hidden {
             display: none !important;
         }
-        
+
         /* Pokémon-style battle interface */
         #battleOverlay {
             position: absolute;
@@ -52,7 +53,7 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         /* Battle background with grass */
         .battle-background {
             flex: 1;
@@ -60,7 +61,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         /* Grass pattern */
         .battle-background::before {
             content: '';
@@ -69,15 +70,13 @@
             left: 0;
             right: 0;
             height: 40%;
-            background: repeating-linear-gradient(
-                45deg,
-                transparent,
-                transparent 10px,
-                rgba(34, 139, 34, 0.1) 10px,
-                rgba(34, 139, 34, 0.1) 20px
-            );
+            background: repeating-linear-gradient(45deg,
+                    transparent,
+                    transparent 10px,
+                    rgba(34, 139, 34, 0.1) 10px,
+                    rgba(34, 139, 34, 0.1) 20px);
         }
-        
+
         /* Character sprites */
         .character-sprite {
             position: absolute;
@@ -89,21 +88,21 @@
             justify-content: center;
             font-size: 40px;
             border: 3px solid #333;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
-        
+
         .groom-sprite {
             bottom: 120px;
             left: 100px;
             background: linear-gradient(135deg, #2E86AB, #1B4F72);
         }
-        
+
         .bride-sprite {
             top: 80px;
             right: 80px;
             background: linear-gradient(135deg, #FF69B4, #C71585);
         }
-        
+
         /* Health bars */
         .health-bar-container {
             position: absolute;
@@ -112,35 +111,35 @@
             border-radius: 5px;
             padding: 2px;
         }
-        
+
         .health-bar-fill {
             height: 100%;
             border-radius: 3px;
             transition: width 0.3s ease;
         }
-        
+
         .groom-health {
             bottom: 220px;
             left: 100px;
             width: 120px;
             height: 15px;
         }
-        
+
         .groom-health .health-bar-fill {
             background: linear-gradient(to right, #FF6B6B, #FF8E8E);
         }
-        
+
         .bride-health {
             top: 20px;
             right: 80px;
             width: 120px;
             height: 15px;
         }
-        
+
         .bride-health .health-bar-fill {
             background: linear-gradient(to right, #FF69B4, #FFB6C1);
         }
-        
+
         .health-text {
             position: absolute;
             font-size: 10px;
@@ -148,17 +147,17 @@
             font-weight: bold;
             text-shadow: 1px 1px 1px #000;
         }
-        
+
         .groom-health .health-text {
             top: -20px;
             left: 0;
         }
-        
+
         .bride-health .health-text {
             top: -20px;
             left: 0;
         }
-        
+
         /* Battle menu */
         #battleMenu {
             height: 200px;
@@ -167,7 +166,7 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         .battle-message {
             flex: 1;
             background: #fff;
@@ -181,7 +180,7 @@
             text-align: center;
             border-radius: 5px;
         }
-        
+
         .battle-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -189,7 +188,7 @@
             padding: 10px;
             height: 80px;
         }
-        
+
         .battle-actions button {
             background: linear-gradient(to bottom, #fff, #ddd);
             border: 2px solid #333;
@@ -204,26 +203,40 @@
             justify-content: center;
             gap: 5px;
         }
-        
+
         .battle-actions button:hover {
             background: linear-gradient(to bottom, #ddd, #bbb);
             transform: translateY(-1px);
         }
-        
+
         .battle-actions button:disabled {
             background: #ccc;
             color: #666;
             cursor: not-allowed;
             transform: none;
         }
-        
+
         /* Move buttons with colors */
-        .move-flirt { border-color: #FF6B6B; }
-        .move-kiss { border-color: #FF69B4; }
-        .move-compliment { border-color: #FFD700; }
-        .move-pokeball { border-color: #FF0000; }
-        .move-run { border-color: #666; }
-        
+        .move-flirt {
+            border-color: #FF6B6B;
+        }
+
+        .move-kiss {
+            border-color: #FF69B4;
+        }
+
+        .move-compliment {
+            border-color: #FFD700;
+        }
+
+        .move-pokeball {
+            border-color: #FF0000;
+        }
+
+        .move-run {
+            border-color: #666;
+        }
+
         /* Pokéball throwing animation */
         .pokeball {
             position: absolute;
@@ -235,7 +248,7 @@
             z-index: 1500;
             display: none;
         }
-        
+
         .pokeball::before {
             content: '';
             position: absolute;
@@ -248,45 +261,80 @@
             border: 2px solid #000;
             border-radius: 50%;
         }
-        
+
         .pokeball-throw {
-            animation: throwPokeball 1.5s ease-out forwards;
+            animation: throwPokeball 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
-        
+
         @keyframes throwPokeball {
             0% {
                 transform: translate(0, 0) rotate(0deg);
                 opacity: 1;
             }
-            50% {
-                transform: translate(350px, -80px) rotate(360deg);
+
+            100% {
+                transform: translate(520px, -100px) rotate(360deg);
                 opacity: 1;
             }
+        }
+
+        .pokeball-wiggle {
+            animation: pokeballWiggle 2s ease-in-out forwards;
+        }
+
+        @keyframes pokeballWiggle {
+            0% {
+                transform: translate(520px, -100px) rotate(0deg);
+                opacity: 1;
+            }
+
+            20% {
+                transform: translate(520px, -100px) rotate(-10deg);
+                opacity: 1;
+            }
+
+            40% {
+                transform: translate(520px, -100px) rotate(10deg);
+                opacity: 1;
+            }
+
+            60% {
+                transform: translate(520px, -100px) rotate(-5deg);
+                opacity: 1;
+            }
+
+            80% {
+                transform: translate(520px, -100px) rotate(5deg);
+                opacity: 1;
+            }
+
             100% {
-                transform: translate(700px, 0px) rotate(720deg);
+                transform: translate(520px, -100px) rotate(0deg);
                 opacity: 0;
             }
         }
-        
+
         .capture-success {
             animation: captureSuccess 2s ease-in-out forwards;
         }
-        
+
         @keyframes captureSuccess {
             0% {
                 transform: scale(1);
                 opacity: 1;
             }
+
             50% {
                 transform: scale(1.2);
                 opacity: 0.8;
             }
+
             100% {
                 transform: scale(0);
                 opacity: 0;
             }
         }
-        
+
         #messageBox {
             position: absolute;
             bottom: 20px;
@@ -303,6 +351,7 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </head>
+
 <body>
     <h1>💒 Wedding Save The Date 💒</h1>
     <div id="gameContainer">
@@ -311,22 +360,22 @@
                 <!-- Character sprites -->
                 <div class="character-sprite groom-sprite">👨</div>
                 <div class="character-sprite bride-sprite">👰</div>
-                
+
                 <!-- Pokéball for throwing animation -->
                 <div class="pokeball" id="pokeball"></div>
-                
+
                 <!-- Health bars -->
                 <div class="health-bar-container groom-health">
                     <div class="health-bar-fill" style="width: 100%;"></div>
                     <div class="health-text">Leonardo Lv.42 HP 83/83</div>
                 </div>
-                
+
                 <div class="health-bar-container bride-health">
                     <div class="health-bar-fill" style="width: 100%;"></div>
                     <div class="health-text">Ghinwa Lv.17 HP 65/65</div>
                 </div>
             </div>
-            
+
             <div id="battleMenu">
                 <div class="battle-message" id="battleMessage">
                     What will Groom do?
@@ -341,14 +390,15 @@
             </div>
         </div>
     </div>
-    
+
     <div id="controls">
         <p>Use WASD or Arrow Keys to move | Space to interact</p>
     </div>
-    
+
     <div id="messageBox" class="hidden"></div>
-    
+
     <script src="config.js"></script>
     <script src="game.js"></script>
 </body>
-</html> 
+
+</html>
