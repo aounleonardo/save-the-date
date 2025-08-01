@@ -211,17 +211,22 @@ class GameScene extends Phaser.Scene {
         const speed = GAME_CONFIG.characters.groom.speed;
         this.groom.setVelocity(0);
         
-        if (this.cursors.left.isDown || this.wasd.A.isDown) {
-            this.groom.setVelocityX(-speed);
-        }
-        if (this.cursors.right.isDown || this.wasd.D.isDown) {
-            this.groom.setVelocityX(speed);
-        }
-        if (this.cursors.up.isDown || this.wasd.W.isDown) {
+        // Get input states
+        const leftPressed = this.cursors.left.isDown || this.wasd.A.isDown;
+        const rightPressed = this.cursors.right.isDown || this.wasd.D.isDown;
+        const upPressed = this.cursors.up.isDown || this.wasd.W.isDown;
+        const downPressed = this.cursors.down.isDown || this.wasd.S.isDown;
+        
+        // Prioritize one direction at a time (like Pokémon)
+        // Priority: Up > Down > Left > Right
+        if (upPressed) {
             this.groom.setVelocityY(-speed);
-        }
-        if (this.cursors.down.isDown || this.wasd.S.isDown) {
+        } else if (downPressed) {
             this.groom.setVelocityY(speed);
+        } else if (leftPressed) {
+            this.groom.setVelocityX(-speed);
+        } else if (rightPressed) {
+            this.groom.setVelocityX(speed);
         }
         
         // Check for interaction
