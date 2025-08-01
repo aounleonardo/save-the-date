@@ -88,10 +88,14 @@ moves: {
 
 ## 🚀 How to Run
 
-1. Simply open `index.html` in a web browser
-2. No server required - it's a pure HTML5/JavaScript game using Phaser 3
-3. Works on desktop and mobile browsers
-4. Phaser 3 is loaded from CDN, so internet connection is required
+1. You must run a local server to load images and assets (opening `index.html` directly will not work in most browsers).
+2. Start a simple server in the project directory (for example, using [http-server](https://www.npmjs.com/package/http-server)):
+   ```
+   npx http-server -p 8000
+   ```
+3. Open [http://localhost:8000/](http://localhost:8000/) in your web browser.
+4. Works on desktop and mobile browsers.
+5. Phaser 3 is loaded from CDN, so an internet connection is required.
 
 ## 🎨 Adding Custom Assets
 
