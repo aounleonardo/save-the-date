@@ -94,13 +94,13 @@
         
         .groom-sprite {
             bottom: 120px;
-            right: 100px;
+            left: 100px;
             background: linear-gradient(135deg, #2E86AB, #1B4F72);
         }
         
         .bride-sprite {
             top: 80px;
-            left: 80px;
+            right: 80px;
             background: linear-gradient(135deg, #FF69B4, #C71585);
         }
         
@@ -121,7 +121,7 @@
         
         .groom-health {
             bottom: 220px;
-            right: 100px;
+            left: 100px;
             width: 120px;
             height: 15px;
         }
@@ -132,7 +132,7 @@
         
         .bride-health {
             top: 20px;
-            left: 80px;
+            right: 80px;
             width: 120px;
             height: 15px;
         }
@@ -224,6 +224,69 @@
         .move-pokeball { border-color: #FF0000; }
         .move-run { border-color: #666; }
         
+        /* Pokéball throwing animation */
+        .pokeball {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(45deg, #FF0000 0%, #FF0000 45%, #FFFFFF 45%, #FFFFFF 55%, #FF0000 55%, #FF0000 100%);
+            border: 2px solid #000;
+            border-radius: 50%;
+            z-index: 1500;
+            display: none;
+        }
+        
+        .pokeball::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: #FFFFFF;
+            border: 2px solid #000;
+            border-radius: 50%;
+        }
+        
+        .pokeball-throw {
+            animation: throwPokeball 1.5s ease-out forwards;
+        }
+        
+        @keyframes throwPokeball {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(350px, -80px) rotate(360deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(700px, 0px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .capture-success {
+            animation: captureSuccess 2s ease-in-out forwards;
+        }
+        
+        @keyframes captureSuccess {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+        
         #messageBox {
             position: absolute;
             bottom: 20px;
@@ -249,15 +312,18 @@
                 <div class="character-sprite groom-sprite">👨</div>
                 <div class="character-sprite bride-sprite">👰</div>
                 
+                <!-- Pokéball for throwing animation -->
+                <div class="pokeball" id="pokeball"></div>
+                
                 <!-- Health bars -->
                 <div class="health-bar-container groom-health">
                     <div class="health-bar-fill" style="width: 100%;"></div>
-                    <div class="health-text">Groom Lv.42 HP 83/83</div>
+                    <div class="health-text">Leonardo Lv.42 HP 83/83</div>
                 </div>
                 
                 <div class="health-bar-container bride-health">
                     <div class="health-bar-fill" style="width: 100%;"></div>
-                    <div class="health-text">Bride Lv.17 HP 35/35</div>
+                    <div class="health-text">Ghinwa Lv.17 HP 65/65</div>
                 </div>
             </div>
             

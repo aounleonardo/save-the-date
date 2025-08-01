@@ -192,8 +192,8 @@ class GameScene extends Phaser.Scene {
         // Initialize battle stats
         this.groomHP = 83;
         this.groomMaxHP = 83;
-        this.brideHP = 35;
-        this.brideMaxHP = 35;
+        this.brideHP = 65;
+        this.brideMaxHP = 65;
         
         // Disable pokeball initially
         document.getElementById('pokeballBtn').disabled = true;
@@ -271,7 +271,6 @@ class GameScene extends Phaser.Scene {
 
     startBattle() {
         this.gameState = 'battling';
-        this.battleProgress = 0;
         this.battleOverlay.classList.remove('hidden');
         
         // Stop the groom's movement
@@ -300,8 +299,8 @@ class GameScene extends Phaser.Scene {
         groomHealthBar.style.width = `${groomHealthPercent}%`;
         brideHealthBar.style.width = `${brideHealthPercent}%`;
         
-        groomHealthText.textContent = `Groom Lv.42 HP ${this.groomHP}/${this.groomMaxHP}`;
-        brideHealthText.textContent = `Bride Lv.17 HP ${this.brideHP}/${this.brideMaxHP}`;
+        groomHealthText.textContent = `Leonardo Lv.42 HP ${this.groomHP}/${this.groomMaxHP}`;
+        brideHealthText.textContent = `Ghinwa Lv.17 HP ${this.brideHP}/${this.brideMaxHP}`;
         
         // Change color based on health
         if (groomHealthPercent <= 25) {
@@ -323,48 +322,74 @@ class GameScene extends Phaser.Scene {
 
     useMove(moveType) {
         const move = this.moves[moveType];
-        this.battleProgress += move.power;
         
-        // Reduce bride's HP based on move power
-        const damage = Math.floor(move.power / 10) + 1;
+        const damage = move.power;
         this.brideHP = Math.max(0, this.brideHP - damage);
         
         this.updateHealthBars();
         this.updateBattleMessage(move.message);
         
-        // Disable button temporarily
         const button = document.getElementById(moveType + 'Btn');
         button.disabled = true;
         setTimeout(() => {
             button.disabled = false;
         }, 1000);
         
-        // Check if bride is defeated or charmed enough
+        // Check if bride is defeated
         if (this.brideHP <= 0) {
             this.brideHP = 0;
             this.updateHealthBars();
-            this.updateBattleMessage('💕 The Bride is charmed! Now is your chance to use the Pokeball!');
-            document.getElementById('pokeballBtn').disabled = false;
-        } else if (this.battleProgress >= this.settings.battleThreshold) {
-            this.updateBattleMessage('💕 The Bride is charmed! Now is your chance to use the Pokeball!');
+            this.updateBattleMessage('💕 Ghinwa is charmed! Now is your chance to use the Pokeball!');
             document.getElementById('pokeballBtn').disabled = false;
         } else {
             // Bride counter-attack
             setTimeout(() => {
-                const counterDamage = Math.floor(Math.random() * 3) + 1;
+                const counterDamage = Math.floor(Math.random() * 10) + 3;
                 this.groomHP = Math.max(0, this.groomHP - counterDamage);
                 this.updateHealthBars();
-                this.updateBattleMessage(`The Bride blushes! Groom took ${counterDamage} damage! 💕`);
+                this.updateBattleMessage(`Ghinwa blushes! Leonardo took ${counterDamage} damage! 💕`);
             }, 500);
         }
     }
 
     usePokeball() {
-        if (this.battleProgress >= this.settings.battleThreshold || this.brideHP <= 0) {
-            this.captureBride();
+        if (this.brideHP <= 0) {
+            this.throwPokeball();
         } else {
-            this.updateBattleMessage('💔 The Bride is not charmed enough yet! Try using more moves!');
+            this.updateBattleMessage('💔 Ghinwa is not charmed enough yet! Try using more moves!');
         }
+    }
+
+    throwPokeball() {
+        const pokeball = document.getElementById('pokeball');
+        const brideSprite = document.querySelector('.bride-sprite');
+        
+        // Position pokeball near the groom (Leonardo)
+        pokeball.style.left = '140px';
+        pokeball.style.bottom = '140px';
+        pokeball.style.display = 'block';
+        
+        // Start the throwing animation
+        setTimeout(() => {
+            pokeball.classList.add('pokeball-throw');
+            this.updateBattleMessage('Leonardo threw a Pokéball!');
+        }, 100);
+        
+        // After pokeball animation, show capture sequence
+        setTimeout(() => {
+            pokeball.style.display = 'none';
+            pokeball.classList.remove('pokeball-throw');
+            
+            // Add capture success animation to bride sprite
+            brideSprite.classList.add('capture-success');
+            this.updateBattleMessage('🎉 Gotcha! Ghinwa was caught! 💕');
+            
+            // Complete the capture after animation
+            setTimeout(() => {
+                this.captureBride();
+            }, 2000);
+            
+        }, 1500);
     }
 
     captureBride() {
@@ -387,7 +412,6 @@ class GameScene extends Phaser.Scene {
 
     runFromBattle() {
         this.gameState = 'exploring';
-        this.battleProgress = 0;
         this.battleOverlay.classList.add('hidden');
         
         // Move groom away from bride to prevent immediate re-trigger

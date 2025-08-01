@@ -52,19 +52,19 @@ const GAME_CONFIG = {
     moves: {
         flirt: { 
             name: 'Flirt', 
-            power: 25, 
+            power: 15, 
             message: '💋 Groom used Flirt! It\'s super effective!',
             emoji: '💋'
         },
         kiss: { 
             name: 'Kiss', 
-            power: 35, 
+            power: 20, 
             message: '😘 Groom used Kiss! Critical hit!',
             emoji: '😘'
         },
         compliment: { 
             name: 'Compliment', 
-            power: 30, 
+            power: 10, 
             message: '💝 Groom used Compliment! Bride is charmed!',
             emoji: '💝'
         }
@@ -72,7 +72,6 @@ const GAME_CONFIG = {
     
     // Game settings
     settings: {
-        battleThreshold: 80,  // How much charm needed to capture
         proximityDistance: 60, // How close to start battle
         interactionDistance: 80, // How close to interact with altar
         messageDuration: 3000   // How long messages show (ms)
