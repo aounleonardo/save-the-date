@@ -16,7 +16,7 @@ const GAME_CONFIG = {
         groom: {
             startX: 72,
             startY: 450,
-            size: 30,
+            size: 48,
             speed: 100,
             color: '#2E86AB',
             hatColor: '#000',

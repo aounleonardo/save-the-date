@@ -30,13 +30,13 @@ class BootScene extends Phaser.Scene {
         // Load background image
         this.load.image('background', 'assets/images/background.png');
         
-        // Create colored rectangles as sprites using graphics
-        const groomGraphics = this.make.graphics();
-        groomGraphics.fillStyle(0x2E86AB);
-        groomGraphics.fillCircle(15, 15, 15);
-        groomGraphics.generateTexture('groom', 30, 30);
-        groomGraphics.destroy();
+        // Load groom sprite sheet with cache-busting
+        this.load.spritesheet('groom', 'assets/images/groom_sprite_sheet.png?v=' + Date.now(), { 
+            frameWidth: 64, 
+            frameHeight: 64 
+        });
         
+        // Create colored rectangles as sprites using graphics for bride
         const brideGraphics = this.make.graphics();
         brideGraphics.fillStyle(0xFF69B4);
         brideGraphics.fillCircle(15, 15, 15);
@@ -68,6 +68,9 @@ class GameScene extends Phaser.Scene {
         // Create characters
         this.createCharacters();
         
+        // Setup groom animation
+        this.setupGroomAnimation();
+        
         // Setup input
         this.setupInput();
         
@@ -94,34 +97,50 @@ class GameScene extends Phaser.Scene {
         
         // No label needed since it's invisible
     }
+    
+    setupGroomAnimation() {
+        // Create walking animation from sprite sheet - use 4 frames (1x4 layout)
+        this.anims.create({
+            key: 'groom-walk',
+            frames: [
+                { key: 'groom', frame: 0 },
+                { key: 'groom', frame: 1 },
+                { key: 'groom', frame: 2 },
+                { key: 'groom', frame: 3 }
+            ],
+            frameRate: 8, // Normal speed for 4 frames
+            repeat: -1 // Loop infinitely
+        });
+        
+        // Create idle animation (first frame)
+        this.anims.create({
+            key: 'groom-idle',
+            frames: [{ key: 'groom', frame: 0 }], // Just the first frame
+            frameRate: 1,
+            repeat: 0
+        });
+    }
 
     createCharacters() {
         const groomConfig = GAME_CONFIG.characters.groom;
         const brideConfig = GAME_CONFIG.characters.bride;
         
-        // Create groom with physics
+        // Create groom with physics using sprite sheet
         this.groom = this.physics.add.sprite(groomConfig.startX, groomConfig.startY, 'groom');
         this.groom.setDisplaySize(groomConfig.size, groomConfig.size);
         this.groom.setCollideWorldBounds(true);
         this.groom.setDepth(3);
+        
+        // Initialize groom animation state
+        this.groom.isMoving = false;
+        this.groom.lastVelocityX = 0;
+        this.groom.lastVelocityY = 0;
         
         // Create bride
         this.bride = this.physics.add.sprite(brideConfig.x, brideConfig.y, 'bride');
         this.bride.setDisplaySize(brideConfig.size, brideConfig.size);
         this.bride.captured = false;
         this.bride.setDepth(3);
-        
-        // Add groom details (hat and face)
-        this.groomHat = this.add.rectangle(
-            this.groom.x, this.groom.y - 10, 16, 8,
-            Phaser.Display.Color.ValueToColor(groomConfig.hatColor).color
-        );
-        this.groomHat.setDepth(4);
-        this.groomFace = this.add.circle(
-            this.groom.x, this.groom.y - 5, 8,
-            Phaser.Display.Color.ValueToColor(groomConfig.faceColor).color
-        );
-        this.groomFace.setDepth(4);
         
         // Add bride details (veil, face, crown)
         this.brideVeil = this.add.rectangle(
@@ -210,6 +229,9 @@ class GameScene extends Phaser.Scene {
             this.groom.setVelocityX(speed);
         }
         
+        // Handle groom animation based on movement
+        this.handleGroomAnimation();
+        
         // Check for interaction
         if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
             this.checkInteraction();
@@ -217,16 +239,35 @@ class GameScene extends Phaser.Scene {
     }
 
     updateCharacterDetails() {
-        // Update groom details position
-        this.groomHat.setPosition(this.groom.x, this.groom.y - 10);
-        this.groomFace.setPosition(this.groom.x, this.groom.y - 5);
-        
         // Update bride details position
         if (!this.bride.captured) {
             this.brideVeil.setPosition(this.bride.x, this.bride.y - 10);
             this.brideFace.setPosition(this.bride.x, this.bride.y - 5);
             this.brideCrown.setPosition(this.bride.x, this.bride.y - 15);
         }
+    }
+    
+    handleGroomAnimation() {
+        const velocityX = this.groom.body.velocity.x;
+        const velocityY = this.groom.body.velocity.y;
+        const isMoving = velocityX !== 0 || velocityY !== 0;
+        
+        // Check if movement state changed
+        if (isMoving !== this.groom.isMoving) {
+            this.groom.isMoving = isMoving;
+            
+            if (isMoving) {
+                // Start walking animation when moving
+                this.groom.play('groom-walk');
+            } else {
+                // Play idle animation when stopped
+                this.groom.play('groom-idle');
+            }
+        }
+        
+        // Update last velocity for direction detection
+        this.groom.lastVelocityX = velocityX;
+        this.groom.lastVelocityY = velocityY;
     }
 
     checkProximityToBride() {
@@ -263,8 +304,10 @@ class GameScene extends Phaser.Scene {
         this.gameState = 'battling';
         this.battleOverlay.classList.remove('hidden');
         
-        // Stop the groom's movement
+        // Stop the groom's movement and animation
         this.groom.setVelocity(0, 0);
+        this.groom.stop();
+        this.groom.setFrame(0); // Show static frame
         
         // Reset battle stats
         this.groomHP = this.groomMaxHP;
@@ -393,6 +436,12 @@ class GameScene extends Phaser.Scene {
         this.bride.captured = true;
         this.gameState = 'captured';
         this.battleOverlay.classList.add('hidden');
+        
+        // Ensure groom is stopped and reset animation state
+        this.groom.setVelocity(0, 0);
+        this.groom.stop();
+        this.groom.setFrame(0);
+        this.groom.isMoving = false;
         
         this.showMessage(this.weddingDetails.capturedMessage);
         
