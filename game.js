@@ -7,7 +7,7 @@ class WeddingGame extends Phaser.Game {
             parent: 'gameContainer',
             width: 800,
             height: 600,
-            backgroundColor: '#87CEEB',
+            backgroundColor: '#000000',
             physics: {
                 default: 'arcade',
                 arcade: {
@@ -27,6 +27,9 @@ class BootScene extends Phaser.Scene {
     }
 
     preload() {
+        // Load background image
+        this.load.image('background', 'assets/images/background.png');
+        
         // Create colored rectangles as sprites using graphics
         const groomGraphics = this.make.graphics();
         groomGraphics.fillStyle(0x2E86AB);
@@ -54,6 +57,11 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
+        // Add background image - set it to cover the entire game area
+        const background = this.add.image(400, 300, 'background');
+        background.setDisplaySize(800, 600);
+        background.setDepth(0); // Ensure it's behind everything
+        
         // Create venue areas
         this.createVenue();
         
@@ -82,6 +90,7 @@ class GameScene extends Phaser.Scene {
             Phaser.Display.Color.ValueToColor(venue.altar.color).color
         );
         this.altar.setStrokeStyle(2, 0x000000);
+        this.altar.setDepth(1);
         
         this.reception = this.add.rectangle(
             venue.reception.x + venue.reception.width/2,
@@ -91,6 +100,7 @@ class GameScene extends Phaser.Scene {
             Phaser.Display.Color.ValueToColor(venue.reception.color).color
         );
         this.reception.setStrokeStyle(2, 0x000000);
+        this.reception.setDepth(1);
         
         this.danceFloor = this.add.rectangle(
             venue.danceFloor.x + venue.danceFloor.width/2,
@@ -100,6 +110,7 @@ class GameScene extends Phaser.Scene {
             Phaser.Display.Color.ValueToColor(venue.danceFloor.color).color
         );
         this.danceFloor.setStrokeStyle(2, 0x000000);
+        this.danceFloor.setDepth(1);
         
         this.entrance = this.add.rectangle(
             venue.entrance.x + venue.entrance.width/2,
@@ -109,16 +120,17 @@ class GameScene extends Phaser.Scene {
             Phaser.Display.Color.ValueToColor(venue.entrance.color).color
         );
         this.entrance.setStrokeStyle(2, 0x000000);
+        this.entrance.setDepth(1);
         
         // Add labels
         this.add.text(venue.altar.x + venue.altar.width/2, venue.altar.y + venue.altar.height/2, 
-            venue.altar.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5);
+            venue.altar.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5).setDepth(2);
         this.add.text(venue.reception.x + venue.reception.width/2, venue.reception.y + venue.reception.height/2, 
-            venue.reception.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5);
+            venue.reception.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5).setDepth(2);
         this.add.text(venue.danceFloor.x + venue.danceFloor.width/2, venue.danceFloor.y + venue.danceFloor.height/2, 
-            venue.danceFloor.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5);
+            venue.danceFloor.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5).setDepth(2);
         this.add.text(venue.entrance.x + venue.entrance.width/2, venue.entrance.y + venue.entrance.height/2, 
-            venue.entrance.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5);
+            venue.entrance.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5).setDepth(2);
     }
 
     createCharacters() {
@@ -129,35 +141,42 @@ class GameScene extends Phaser.Scene {
         this.groom = this.physics.add.sprite(groomConfig.startX, groomConfig.startY, 'groom');
         this.groom.setDisplaySize(groomConfig.size, groomConfig.size);
         this.groom.setCollideWorldBounds(true);
+        this.groom.setDepth(3);
         
         // Create bride
         this.bride = this.physics.add.sprite(brideConfig.x, brideConfig.y, 'bride');
         this.bride.setDisplaySize(brideConfig.size, brideConfig.size);
         this.bride.captured = false;
+        this.bride.setDepth(3);
         
         // Add groom details (hat and face)
         this.groomHat = this.add.rectangle(
             this.groom.x, this.groom.y - 10, 16, 8,
             Phaser.Display.Color.ValueToColor(groomConfig.hatColor).color
         );
+        this.groomHat.setDepth(4);
         this.groomFace = this.add.circle(
             this.groom.x, this.groom.y - 5, 8,
             Phaser.Display.Color.ValueToColor(groomConfig.faceColor).color
         );
+        this.groomFace.setDepth(4);
         
         // Add bride details (veil, face, crown)
         this.brideVeil = this.add.rectangle(
             this.bride.x, this.bride.y - 10, 30, 15,
             Phaser.Display.Color.ValueToColor(brideConfig.veilColor).color
         );
+        this.brideVeil.setDepth(4);
         this.brideFace = this.add.circle(
             this.bride.x, this.bride.y - 5, 8,
             Phaser.Display.Color.ValueToColor(brideConfig.faceColor).color
         );
+        this.brideFace.setDepth(4);
         this.brideCrown = this.add.rectangle(
             this.bride.x, this.bride.y - 15, 20, 5,
             Phaser.Display.Color.ValueToColor(brideConfig.crownColor).color
         );
+        this.brideCrown.setDepth(4);
     }
 
     setupInput() {

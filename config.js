@@ -32,7 +32,7 @@ const GAME_CONFIG = {
             startX: 400,
             startY: 300,
             size: 30,
-            speed: 200,
+            speed: 10,
             color: '#2E86AB',
             hatColor: '#000',
             faceColor: '#FFE4C4'
