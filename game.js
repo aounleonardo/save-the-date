@@ -81,56 +81,18 @@ class GameScene extends Phaser.Scene {
     createVenue() {
         const venue = GAME_CONFIG.venue;
         
-        // Create venue areas as colored rectangles
-        this.altar = this.add.rectangle(
-            venue.altar.x + venue.altar.width/2,
-            venue.altar.y + venue.altar.height/2,
-            venue.altar.width,
-            venue.altar.height,
-            Phaser.Display.Color.ValueToColor(venue.altar.color).color
+        // Create invisible ceremony area for interaction
+        this.ceremonyArea = this.add.rectangle(
+            venue.ceremonyArea.x + venue.ceremonyArea.width/2,
+            venue.ceremonyArea.y + venue.ceremonyArea.height/2,
+            venue.ceremonyArea.width,
+            venue.ceremonyArea.height,
+            0x000000 // Black color
         );
-        this.altar.setStrokeStyle(2, 0x000000);
-        this.altar.setDepth(1);
+        this.ceremonyArea.setAlpha(0);
+        this.ceremonyArea.setDepth(1);
         
-        this.reception = this.add.rectangle(
-            venue.reception.x + venue.reception.width/2,
-            venue.reception.y + venue.reception.height/2,
-            venue.reception.width,
-            venue.reception.height,
-            Phaser.Display.Color.ValueToColor(venue.reception.color).color
-        );
-        this.reception.setStrokeStyle(2, 0x000000);
-        this.reception.setDepth(1);
-        
-        this.danceFloor = this.add.rectangle(
-            venue.danceFloor.x + venue.danceFloor.width/2,
-            venue.danceFloor.y + venue.danceFloor.height/2,
-            venue.danceFloor.width,
-            venue.danceFloor.height,
-            Phaser.Display.Color.ValueToColor(venue.danceFloor.color).color
-        );
-        this.danceFloor.setStrokeStyle(2, 0x000000);
-        this.danceFloor.setDepth(1);
-        
-        this.entrance = this.add.rectangle(
-            venue.entrance.x + venue.entrance.width/2,
-            venue.entrance.y + venue.entrance.height/2,
-            venue.entrance.width,
-            venue.entrance.height,
-            Phaser.Display.Color.ValueToColor(venue.entrance.color).color
-        );
-        this.entrance.setStrokeStyle(2, 0x000000);
-        this.entrance.setDepth(1);
-        
-        // Add labels
-        this.add.text(venue.altar.x + venue.altar.width/2, venue.altar.y + venue.altar.height/2, 
-            venue.altar.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5).setDepth(2);
-        this.add.text(venue.reception.x + venue.reception.width/2, venue.reception.y + venue.reception.height/2, 
-            venue.reception.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5).setDepth(2);
-        this.add.text(venue.danceFloor.x + venue.danceFloor.width/2, venue.danceFloor.y + venue.danceFloor.height/2, 
-            venue.danceFloor.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5).setDepth(2);
-        this.add.text(venue.entrance.x + venue.entrance.width/2, venue.entrance.y + venue.entrance.height/2, 
-            venue.entrance.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5).setDepth(2);
+        // No label needed since it's invisible
     }
 
     createCharacters() {
@@ -281,14 +243,18 @@ class GameScene extends Phaser.Scene {
     }
 
     checkInteraction() {
-        const altarConfig = GAME_CONFIG.venue.altar;
-        const distance = Phaser.Math.Distance.Between(
-            this.groom.x, this.groom.y,
-            altarConfig.x + altarConfig.width/2,
-            altarConfig.y + altarConfig.height/2
-        );
+        const ceremonyConfig = GAME_CONFIG.venue.ceremonyArea;
         
-        if (distance < this.settings.interactionDistance) {
+        // Check if groom is inside the ceremony area bounds
+        const groomX = this.groom.x;
+        const groomY = this.groom.y;
+        const areaLeft = ceremonyConfig.x;
+        const areaRight = ceremonyConfig.x + ceremonyConfig.width;
+        const areaTop = ceremonyConfig.y;
+        const areaBottom = ceremonyConfig.y + ceremonyConfig.height;
+        
+        if (groomX >= areaLeft && groomX <= areaRight && 
+            groomY >= areaTop && groomY <= areaBottom) {
             this.showMessage('💒 You approach the altar... the perfect place for your special moment!');
         }
     }

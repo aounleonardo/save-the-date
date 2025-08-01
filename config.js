@@ -4,42 +4,27 @@
 const GAME_CONFIG = {
     // Venue Layout - Easy to edit!
     venue: {
-        altar: { 
-            x: 400, y: 200, width: 100, height: 80, 
+        ceremonyArea: { 
+            x: 250, y: 120, width: 180, height: 320, 
             color: '#8B4513', 
-            label: 'Altar' 
-        },
-        reception: { 
-            x: 200, y: 400, width: 150, height: 100, 
-            color: '#228B22', 
-            label: 'Reception' 
-        },
-        danceFloor: { 
-            x: 500, y: 450, width: 120, height: 80, 
-            color: '#FFD700', 
-            label: 'Dance Floor' 
-        },
-        entrance: { 
-            x: 50, y: 50, width: 80, height: 60, 
-            color: '#696969', 
-            label: 'Entrance' 
+            label: 'Ceremony Area' 
         }
     },
     
     // Character positions and colors
     characters: {
         groom: {
-            startX: 400,
-            startY: 300,
+            startX: 72,
+            startY: 450,
             size: 30,
-            speed: 10,
+            speed: 100,
             color: '#2E86AB',
             hatColor: '#000',
             faceColor: '#FFE4C4'
         },
         bride: {
-            x: 600,
-            y: 250,
+            x: 342,
+            y: 180,
             size: 30,
             color: '#FF69B4',
             veilColor: '#FFF',
