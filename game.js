@@ -1,184 +1,411 @@
-class WeddingGame {
+// Phaser 3 Wedding Save The Date Game
+
+class WeddingGame extends Phaser.Game {
     constructor() {
-        this.canvas = document.getElementById('gameCanvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.battleMenu = document.getElementById('battleMenu');
+        const config = {
+            type: Phaser.AUTO,
+            parent: 'gameContainer',
+            width: 800,
+            height: 600,
+            backgroundColor: '#87CEEB',
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 },
+                    debug: false
+                }
+            },
+            scene: [BootScene, GameScene, BattleScene]
+        };
+        super(config);
+    }
+}
+
+class BootScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'BootScene' });
+    }
+
+    preload() {
+        // Create colored rectangles as sprites using graphics
+        const groomGraphics = this.make.graphics();
+        groomGraphics.fillStyle(0x2E86AB);
+        groomGraphics.fillCircle(15, 15, 15);
+        groomGraphics.generateTexture('groom', 30, 30);
+        groomGraphics.destroy();
+        
+        const brideGraphics = this.make.graphics();
+        brideGraphics.fillStyle(0xFF69B4);
+        brideGraphics.fillCircle(15, 15, 15);
+        brideGraphics.generateTexture('bride', 30, 30);
+        brideGraphics.destroy();
+    }
+
+    create() {
+        this.scene.start('GameScene');
+    }
+}
+
+class GameScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'GameScene' });
+        this.gameState = 'exploring';
+        this.battleProgress = 0;
+    }
+
+    create() {
+        // Create venue areas
+        this.createVenue();
+        
+        // Create characters
+        this.createCharacters();
+        
+        // Setup input
+        this.setupInput();
+        
+        // Setup UI
+        this.setupUI();
+        
+        // Setup battle system
+        this.setupBattleSystem();
+    }
+
+    createVenue() {
+        const venue = GAME_CONFIG.venue;
+        
+        // Create venue areas as colored rectangles
+        this.altar = this.add.rectangle(
+            venue.altar.x + venue.altar.width/2,
+            venue.altar.y + venue.altar.height/2,
+            venue.altar.width,
+            venue.altar.height,
+            Phaser.Display.Color.ValueToColor(venue.altar.color).color
+        );
+        this.altar.setStrokeStyle(2, 0x000000);
+        
+        this.reception = this.add.rectangle(
+            venue.reception.x + venue.reception.width/2,
+            venue.reception.y + venue.reception.height/2,
+            venue.reception.width,
+            venue.reception.height,
+            Phaser.Display.Color.ValueToColor(venue.reception.color).color
+        );
+        this.reception.setStrokeStyle(2, 0x000000);
+        
+        this.danceFloor = this.add.rectangle(
+            venue.danceFloor.x + venue.danceFloor.width/2,
+            venue.danceFloor.y + venue.danceFloor.height/2,
+            venue.danceFloor.width,
+            venue.danceFloor.height,
+            Phaser.Display.Color.ValueToColor(venue.danceFloor.color).color
+        );
+        this.danceFloor.setStrokeStyle(2, 0x000000);
+        
+        this.entrance = this.add.rectangle(
+            venue.entrance.x + venue.entrance.width/2,
+            venue.entrance.y + venue.entrance.height/2,
+            venue.entrance.width,
+            venue.entrance.height,
+            Phaser.Display.Color.ValueToColor(venue.entrance.color).color
+        );
+        this.entrance.setStrokeStyle(2, 0x000000);
+        
+        // Add labels
+        this.add.text(venue.altar.x + venue.altar.width/2, venue.altar.y + venue.altar.height/2, 
+            venue.altar.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5);
+        this.add.text(venue.reception.x + venue.reception.width/2, venue.reception.y + venue.reception.height/2, 
+            venue.reception.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5);
+        this.add.text(venue.danceFloor.x + venue.danceFloor.width/2, venue.danceFloor.y + venue.danceFloor.height/2, 
+            venue.danceFloor.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5);
+        this.add.text(venue.entrance.x + venue.entrance.width/2, venue.entrance.y + venue.entrance.height/2, 
+            venue.entrance.label, { fontSize: '12px', fill: '#000' }).setOrigin(0.5);
+    }
+
+    createCharacters() {
+        const groomConfig = GAME_CONFIG.characters.groom;
+        const brideConfig = GAME_CONFIG.characters.bride;
+        
+        // Create groom with physics
+        this.groom = this.physics.add.sprite(groomConfig.startX, groomConfig.startY, 'groom');
+        this.groom.setDisplaySize(groomConfig.size, groomConfig.size);
+        this.groom.setCollideWorldBounds(true);
+        
+        // Create bride
+        this.bride = this.physics.add.sprite(brideConfig.x, brideConfig.y, 'bride');
+        this.bride.setDisplaySize(brideConfig.size, brideConfig.size);
+        this.bride.captured = false;
+        
+        // Add groom details (hat and face)
+        this.groomHat = this.add.rectangle(
+            this.groom.x, this.groom.y - 10, 16, 8,
+            Phaser.Display.Color.ValueToColor(groomConfig.hatColor).color
+        );
+        this.groomFace = this.add.circle(
+            this.groom.x, this.groom.y - 5, 8,
+            Phaser.Display.Color.ValueToColor(groomConfig.faceColor).color
+        );
+        
+        // Add bride details (veil, face, crown)
+        this.brideVeil = this.add.rectangle(
+            this.bride.x, this.bride.y - 10, 30, 15,
+            Phaser.Display.Color.ValueToColor(brideConfig.veilColor).color
+        );
+        this.brideFace = this.add.circle(
+            this.bride.x, this.bride.y - 5, 8,
+            Phaser.Display.Color.ValueToColor(brideConfig.faceColor).color
+        );
+        this.brideCrown = this.add.rectangle(
+            this.bride.x, this.bride.y - 15, 20, 5,
+            Phaser.Display.Color.ValueToColor(brideConfig.crownColor).color
+        );
+    }
+
+    setupInput() {
+        this.cursors = this.input.keyboard.createCursorKeys();
+        this.wasd = this.input.keyboard.addKeys({
+            W: Phaser.Input.Keyboard.KeyCodes.W,
+            A: Phaser.Input.Keyboard.KeyCodes.A,
+            S: Phaser.Input.Keyboard.KeyCodes.S,
+            D: Phaser.Input.Keyboard.KeyCodes.D
+        });
+        this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    }
+
+    setupUI() {
+        this.battleOverlay = document.getElementById('battleOverlay');
+        this.battleMessage = document.getElementById('battleMessage');
         this.messageBox = document.getElementById('messageBox');
         
-        this.gameState = 'exploring';
-        this.inBattle = false;
-        this.battleProgress = 0;
-        
-        this.player = {
-            x: GAME_CONFIG.characters.groom.startX,
-            y: GAME_CONFIG.characters.groom.startY,
-            size: GAME_CONFIG.characters.groom.size,
-            speed: GAME_CONFIG.characters.groom.speed,
-            color: GAME_CONFIG.characters.groom.color,
-            vx: 0, // velocity x
-            vy: 0, // velocity y
-            maxSpeed: GAME_CONFIG.characters.groom.speed,
-            acceleration: GAME_CONFIG.characters.groom.acceleration,
-            friction: GAME_CONFIG.characters.groom.friction
-        };
-        
-        this.bride = {
-            x: GAME_CONFIG.characters.bride.x,
-            y: GAME_CONFIG.characters.bride.y,
-            size: GAME_CONFIG.characters.bride.size,
-            color: GAME_CONFIG.characters.bride.color,
-            captured: false
-        };
-        
-        this.venue = GAME_CONFIG.venue;
-        this.moves = GAME_CONFIG.moves;
-        this.settings = GAME_CONFIG.settings;
-        this.weddingDetails = GAME_CONFIG.weddingDetails;
-        
-        this.setupEventListeners();
-        this.gameLoop();
-    }
-    
-    setupEventListeners() {
-        document.addEventListener('keydown', (e) => {
-            if (this.gameState === 'exploring') {
-                this.handleMovement(e);
-            }
-        });
-        
+        // Battle menu event listeners
         document.getElementById('flirtBtn').addEventListener('click', () => this.useMove('flirt'));
         document.getElementById('kissBtn').addEventListener('click', () => this.useMove('kiss'));
         document.getElementById('complimentBtn').addEventListener('click', () => this.useMove('compliment'));
         document.getElementById('pokeballBtn').addEventListener('click', () => this.usePokeball());
         document.getElementById('runBtn').addEventListener('click', () => this.runFromBattle());
     }
-    
-    handleMovement(e) {
-        const key = e.key.toLowerCase();
+
+    setupBattleSystem() {
+        this.moves = GAME_CONFIG.moves;
+        this.settings = GAME_CONFIG.settings;
+        this.weddingDetails = GAME_CONFIG.weddingDetails;
         
-        switch(key) {
-            case 'w':
-            case 'arrowup':
-                this.player.vy -= this.player.acceleration;
-                break;
-            case 's':
-            case 'arrowdown':
-                this.player.vy += this.player.acceleration;
-                break;
-            case 'a':
-            case 'arrowleft':
-                this.player.vx -= this.player.acceleration;
-                break;
-            case 'd':
-            case 'arrowright':
-                this.player.vx += this.player.acceleration;
-                break;
-            case ' ':
-                this.checkInteraction();
-                break;
-        }
+        // Initialize battle stats
+        this.groomHP = 83;
+        this.groomMaxHP = 83;
+        this.brideHP = 35;
+        this.brideMaxHP = 35;
         
-        // Limit maximum speed
-        this.player.vx = Math.max(-this.player.maxSpeed, Math.min(this.player.maxSpeed, this.player.vx));
-        this.player.vy = Math.max(-this.player.maxSpeed, Math.min(this.player.maxSpeed, this.player.vy));
+        // Disable pokeball initially
+        document.getElementById('pokeballBtn').disabled = true;
     }
-    
-    updatePlayerMovement() {
-        // Apply friction
-        this.player.vx *= this.player.friction;
-        this.player.vy *= this.player.friction;
-        
-        // Update position
-        this.player.x += this.player.vx;
-        this.player.y += this.player.vy;
-        
-        // Keep player in bounds
-        this.player.x = Math.max(this.player.size/2, Math.min(this.canvas.width - this.player.size/2, this.player.x));
-        this.player.y = Math.max(this.player.size/2, Math.min(this.canvas.height - this.player.size/2, this.player.y));
-        
-        // Stop movement if very small (prevent jitter)
-        if (Math.abs(this.player.vx) < 0.1) this.player.vx = 0;
-        if (Math.abs(this.player.vy) < 0.1) this.player.vy = 0;
-        
-        // Check proximity to bride if moving
-        if (Math.abs(this.player.vx) > 0.1 || Math.abs(this.player.vy) > 0.1) {
+
+    update() {
+        if (this.gameState === 'exploring') {
+            this.handleMovement();
+            this.updateCharacterDetails();
             this.checkProximityToBride();
         }
     }
-    
+
+    handleMovement() {
+        const speed = GAME_CONFIG.characters.groom.speed;
+        this.groom.setVelocity(0);
+        
+        if (this.cursors.left.isDown || this.wasd.A.isDown) {
+            this.groom.setVelocityX(-speed);
+        }
+        if (this.cursors.right.isDown || this.wasd.D.isDown) {
+            this.groom.setVelocityX(speed);
+        }
+        if (this.cursors.up.isDown || this.wasd.W.isDown) {
+            this.groom.setVelocityY(-speed);
+        }
+        if (this.cursors.down.isDown || this.wasd.S.isDown) {
+            this.groom.setVelocityY(speed);
+        }
+        
+        // Check for interaction
+        if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+            this.checkInteraction();
+        }
+    }
+
+    updateCharacterDetails() {
+        // Update groom details position
+        this.groomHat.setPosition(this.groom.x, this.groom.y - 10);
+        this.groomFace.setPosition(this.groom.x, this.groom.y - 5);
+        
+        // Update bride details position
+        if (!this.bride.captured) {
+            this.brideVeil.setPosition(this.bride.x, this.bride.y - 10);
+            this.brideFace.setPosition(this.bride.x, this.bride.y - 5);
+            this.brideCrown.setPosition(this.bride.x, this.bride.y - 15);
+        }
+    }
+
     checkProximityToBride() {
-        const distance = Math.sqrt(
-            Math.pow(this.player.x - this.bride.x, 2) + 
-            Math.pow(this.player.y - this.bride.y, 2)
+        if (this.bride.captured) return;
+        
+        const distance = Phaser.Math.Distance.Between(
+            this.groom.x, this.groom.y,
+            this.bride.x, this.bride.y
         );
         
-        if (distance < this.settings.proximityDistance && !this.bride.captured && this.gameState === 'exploring') {
+        if (distance < this.settings.proximityDistance) {
             this.startBattle();
         }
     }
-    
+
     checkInteraction() {
-        const altarDistance = Math.sqrt(
-            Math.pow(this.player.x - (this.venue.altar.x + this.venue.altar.width/2), 2) + 
-            Math.pow(this.player.y - (this.venue.altar.y + this.venue.altar.height/2), 2)
+        const altarConfig = GAME_CONFIG.venue.altar;
+        const distance = Phaser.Math.Distance.Between(
+            this.groom.x, this.groom.y,
+            altarConfig.x + altarConfig.width/2,
+            altarConfig.y + altarConfig.height/2
         );
         
-        if (altarDistance < this.settings.interactionDistance) {
+        if (distance < this.settings.interactionDistance) {
             this.showMessage('💒 You approach the altar... the perfect place for your special moment!');
         }
     }
-    
+
     startBattle() {
         this.gameState = 'battling';
-        this.inBattle = true;
         this.battleProgress = 0;
-        this.battleMenu.classList.remove('hidden');
-        this.showMessage('💕 A wild Bride appeared! 💕');
+        this.battleOverlay.classList.remove('hidden');
+        
+        // Stop the groom's movement
+        this.groom.setVelocity(0, 0);
+        
+        // Reset battle stats
+        this.groomHP = this.groomMaxHP;
+        this.brideHP = this.brideMaxHP;
+        this.updateHealthBars();
+        
+        // Disable pokeball initially
+        document.getElementById('pokeballBtn').disabled = true;
+        
+        this.updateBattleMessage('A wild Bride appeared! 💕');
     }
-    
+
+    updateHealthBars() {
+        const groomHealthBar = document.querySelector('.groom-health .health-bar-fill');
+        const brideHealthBar = document.querySelector('.bride-health .health-bar-fill');
+        const groomHealthText = document.querySelector('.groom-health .health-text');
+        const brideHealthText = document.querySelector('.bride-health .health-text');
+        
+        const groomHealthPercent = (this.groomHP / this.groomMaxHP) * 100;
+        const brideHealthPercent = (this.brideHP / this.brideMaxHP) * 100;
+        
+        groomHealthBar.style.width = `${groomHealthPercent}%`;
+        brideHealthBar.style.width = `${brideHealthPercent}%`;
+        
+        groomHealthText.textContent = `Groom Lv.42 HP ${this.groomHP}/${this.groomMaxHP}`;
+        brideHealthText.textContent = `Bride Lv.17 HP ${this.brideHP}/${this.brideMaxHP}`;
+        
+        // Change color based on health
+        if (groomHealthPercent <= 25) {
+            groomHealthBar.style.background = 'linear-gradient(to right, #FF0000, #FF4444)';
+        } else if (groomHealthPercent <= 50) {
+            groomHealthBar.style.background = 'linear-gradient(to right, #FFAA00, #FFCC44)';
+        }
+        
+        if (brideHealthPercent <= 25) {
+            brideHealthBar.style.background = 'linear-gradient(to right, #FF0000, #FF4444)';
+        } else if (brideHealthPercent <= 50) {
+            brideHealthBar.style.background = 'linear-gradient(to right, #FFAA00, #FFCC44)';
+        }
+    }
+
+    updateBattleMessage(message) {
+        this.battleMessage.textContent = message;
+    }
+
     useMove(moveType) {
         const move = this.moves[moveType];
         this.battleProgress += move.power;
-        this.showMessage(move.message);
         
-        document.getElementById(moveType + 'Btn').disabled = true;
+        // Reduce bride's HP based on move power
+        const damage = Math.floor(move.power / 10) + 1;
+        this.brideHP = Math.max(0, this.brideHP - damage);
+        
+        this.updateHealthBars();
+        this.updateBattleMessage(move.message);
+        
+        // Disable button temporarily
+        const button = document.getElementById(moveType + 'Btn');
+        button.disabled = true;
         setTimeout(() => {
-            document.getElementById(moveType + 'Btn').disabled = false;
+            button.disabled = false;
         }, 1000);
         
-        if (this.battleProgress >= this.settings.battleThreshold) {
-            this.showMessage('💕 The Bride is charmed! Now is your chance to use the Pokeball!');
+        // Check if bride is defeated or charmed enough
+        if (this.brideHP <= 0) {
+            this.brideHP = 0;
+            this.updateHealthBars();
+            this.updateBattleMessage('💕 The Bride is charmed! Now is your chance to use the Pokeball!');
             document.getElementById('pokeballBtn').disabled = false;
+        } else if (this.battleProgress >= this.settings.battleThreshold) {
+            this.updateBattleMessage('💕 The Bride is charmed! Now is your chance to use the Pokeball!');
+            document.getElementById('pokeballBtn').disabled = false;
+        } else {
+            // Bride counter-attack
+            setTimeout(() => {
+                const counterDamage = Math.floor(Math.random() * 3) + 1;
+                this.groomHP = Math.max(0, this.groomHP - counterDamage);
+                this.updateHealthBars();
+                this.updateBattleMessage(`The Bride blushes! Groom took ${counterDamage} damage! 💕`);
+            }, 500);
         }
     }
-    
+
     usePokeball() {
-        if (this.battleProgress >= this.settings.battleThreshold) {
+        if (this.battleProgress >= this.settings.battleThreshold || this.brideHP <= 0) {
             this.captureBride();
         } else {
-            this.showMessage('💔 The Bride is not charmed enough yet! Try using more moves!');
+            this.updateBattleMessage('💔 The Bride is not charmed enough yet! Try using more moves!');
         }
     }
-    
+
     captureBride() {
         this.bride.captured = true;
         this.gameState = 'captured';
-        this.battleMenu.classList.add('hidden');
+        this.battleOverlay.classList.add('hidden');
+        
         this.showMessage(this.weddingDetails.capturedMessage);
+        
+        // Hide bride details
+        this.brideVeil.setVisible(false);
+        this.brideFace.setVisible(false);
+        this.brideCrown.setVisible(false);
+        this.bride.setVisible(false);
         
         setTimeout(() => {
             this.showMessage(this.weddingDetails.title + '\n' + this.weddingDetails.message);
         }, 3000);
     }
-    
+
     runFromBattle() {
         this.gameState = 'exploring';
-        this.inBattle = false;
         this.battleProgress = 0;
-        this.battleMenu.classList.add('hidden');
+        this.battleOverlay.classList.add('hidden');
+        
+        // Move groom away from bride to prevent immediate re-trigger
+        const angle = Phaser.Math.Angle.Between(this.bride.x, this.bride.y, this.groom.x, this.groom.y);
+        const distance = 100; // Move 100 pixels away
+        this.groom.x = this.bride.x + Math.cos(angle) * distance;
+        this.groom.y = this.bride.y + Math.sin(angle) * distance;
+        
+        // Keep groom in bounds
+        this.groom.x = Math.max(this.groom.width/2, Math.min(this.game.config.width - this.groom.width/2, this.groom.x));
+        this.groom.y = Math.max(this.groom.height/2, Math.min(this.game.config.height - this.groom.height/2, this.groom.y));
+        
+        // Stop movement
+        this.groom.setVelocity(0, 0);
+        
         this.showMessage('🏃 You ran away from the battle...');
     }
-    
+
     showMessage(message) {
         this.messageBox.textContent = message;
         this.messageBox.classList.remove('hidden');
@@ -186,90 +413,15 @@ class WeddingGame {
             this.messageBox.classList.add('hidden');
         }, this.settings.messageDuration);
     }
-    
-    drawVenue() {
-        this.ctx.fillStyle = this.venue.altar.color;
-        this.ctx.fillRect(this.venue.altar.x, this.venue.altar.y, this.venue.altar.width, this.venue.altar.height);
-        this.ctx.fillStyle = '#000';
-        this.ctx.font = '12px Arial';
-        this.ctx.fillText(this.venue.altar.label, this.venue.altar.x + 35, this.venue.altar.y + 45);
-        
-        this.ctx.fillStyle = this.venue.reception.color;
-        this.ctx.fillRect(this.venue.reception.x, this.venue.reception.y, this.venue.reception.width, this.venue.reception.height);
-        this.ctx.fillText(this.venue.reception.label, this.venue.reception.x + 45, this.venue.reception.y + 55);
-        
-        this.ctx.fillStyle = this.venue.danceFloor.color;
-        this.ctx.fillRect(this.venue.danceFloor.x, this.venue.danceFloor.y, this.venue.danceFloor.width, this.venue.danceFloor.height);
-        this.ctx.fillText(this.venue.danceFloor.label, this.venue.danceFloor.x + 35, this.venue.danceFloor.y + 45);
-        
-        this.ctx.fillStyle = this.venue.entrance.color;
-        this.ctx.fillRect(this.venue.entrance.x, this.venue.entrance.y, this.venue.entrance.width, this.venue.entrance.height);
-        this.ctx.fillText(this.venue.entrance.label, this.venue.entrance.x + 20, this.venue.entrance.y + 35);
-    }
-    
-    drawPlayer() {
-        this.ctx.fillStyle = this.player.color;
-        this.ctx.beginPath();
-        this.ctx.arc(this.player.x, this.player.y, this.player.size/2, 0, 2 * Math.PI);
-        this.ctx.fill();
-        
-        this.ctx.fillStyle = GAME_CONFIG.characters.groom.hatColor;
-        this.ctx.fillRect(this.player.x - 8, this.player.y - 20, 16, 8);
-        
-        this.ctx.fillStyle = GAME_CONFIG.characters.groom.faceColor;
-        this.ctx.beginPath();
-        this.ctx.arc(this.player.x, this.player.y - 5, 8, 0, 2 * Math.PI);
-        this.ctx.fill();
-    }
-    
-    drawBride() {
-        if (!this.bride.captured) {
-            this.ctx.fillStyle = this.bride.color;
-            this.ctx.beginPath();
-            this.ctx.arc(this.bride.x, this.bride.y, this.bride.size/2, 0, 2 * Math.PI);
-            this.ctx.fill();
-            
-            this.ctx.fillStyle = GAME_CONFIG.characters.bride.veilColor;
-            this.ctx.fillRect(this.bride.x - 15, this.bride.y - 25, 30, 15);
-            
-            this.ctx.fillStyle = GAME_CONFIG.characters.bride.faceColor;
-            this.ctx.beginPath();
-            this.ctx.arc(this.bride.x, this.bride.y - 5, 8, 0, 2 * Math.PI);
-            this.ctx.fill();
-            
-            this.ctx.fillStyle = GAME_CONFIG.characters.bride.crownColor;
-            this.ctx.fillRect(this.bride.x - 10, this.bride.y - 30, 20, 5);
-        }
-    }
-    
-    drawBattleUI() {
-        if (this.inBattle) {
-            this.ctx.fillStyle = '#333';
-            this.ctx.fillRect(50, 50, 200, 20);
-            this.ctx.fillStyle = '#4CAF50';
-            this.ctx.fillRect(50, 50, (this.battleProgress / 100) * 200, 20);
-            
-            this.ctx.fillStyle = '#000';
-            this.ctx.font = '14px Arial';
-            this.ctx.fillText(`Charm Progress: ${this.battleProgress}%`, 50, 40);
-        }
-    }
-    
-    draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.updatePlayerMovement();
-        this.drawVenue();
-        this.drawBride();
-        this.drawPlayer();
-        this.drawBattleUI();
-    }
-    
-    gameLoop() {
-        this.draw();
-        requestAnimationFrame(() => this.gameLoop());
+}
+
+class BattleScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'BattleScene' });
     }
 }
 
+// Initialize the game
 window.addEventListener('load', () => {
     new WeddingGame();
 }); 

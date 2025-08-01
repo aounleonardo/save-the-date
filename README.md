@@ -1,6 +1,6 @@
 # 💒 Wedding Save The Date Game 💒
 
-A fun Pokemon-style game where you, the groom, walk around your wedding venue to capture the bride with romantic moves!
+A fun Pokemon-style game built with Phaser 3 where you, the groom, walk around your wedding venue to capture the bride with romantic moves!
 
 ## 🎮 How to Play
 
@@ -13,7 +13,8 @@ A fun Pokemon-style game where you, the groom, walk around your wedding venue to
 
 ## 🎯 Game Features
 
-- **Character Movement**: Smooth movement with keyboard controls
+- **Built with Phaser 3**: Professional game engine with physics, sprites, and scene management
+- **Smooth Character Movement**: Physics-based movement with proper collision detection
 - **Venue Exploration**: Multiple areas to explore (altar, reception, dance floor, entrance)
 - **Battle System**: Pokemon-style battle with romantic moves instead of fighting
 - **Charm Meter**: Build up charm to capture the bride
@@ -88,8 +89,9 @@ moves: {
 ## 🚀 How to Run
 
 1. Simply open `index.html` in a web browser
-2. No server required - it's a pure HTML5/JavaScript game
+2. No server required - it's a pure HTML5/JavaScript game using Phaser 3
 3. Works on desktop and mobile browsers
+4. Phaser 3 is loaded from CDN, so internet connection is required
 
 ## 🎨 Adding Custom Assets
 

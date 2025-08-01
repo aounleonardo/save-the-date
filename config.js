@@ -32,12 +32,10 @@ const GAME_CONFIG = {
             startX: 100,
             startY: 300,
             size: 30,
-            speed: 40,
+            speed: 200,
             color: '#2E86AB',
             hatColor: '#000',
-            faceColor: '#FFE4C4',
-            acceleration: 0.9,
-            friction: 0.85
+            faceColor: '#FFE4C4'
         },
         bride: {
             x: 600,
@@ -54,27 +52,27 @@ const GAME_CONFIG = {
     moves: {
         flirt: { 
             name: 'Flirt', 
-            power: 20, 
-            message: '💋 You give her a charming smile!',
+            power: 25, 
+            message: '💋 Groom used Flirt! It\'s super effective!',
             emoji: '💋'
         },
         kiss: { 
             name: 'Kiss', 
-            power: 30, 
-            message: '😘 You plant a sweet kiss!',
+            power: 35, 
+            message: '😘 Groom used Kiss! Critical hit!',
             emoji: '😘'
         },
         compliment: { 
             name: 'Compliment', 
-            power: 25, 
-            message: '💝 You tell her she looks beautiful!',
+            power: 30, 
+            message: '💝 Groom used Compliment! Bride is charmed!',
             emoji: '💝'
         }
     },
     
     // Game settings
     settings: {
-        battleThreshold: 100,  // How much charm needed to capture
+        battleThreshold: 80,  // How much charm needed to capture
         proximityDistance: 60, // How close to start battle
         interactionDistance: 80, // How close to interact with altar
         messageDuration: 3000   // How long messages show (ms)
