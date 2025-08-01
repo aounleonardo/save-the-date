@@ -1,0 +1,94 @@
+// Wedding Save The Date Game Configuration
+// Edit these values to customize your game!
+
+const GAME_CONFIG = {
+    // Venue Layout - Easy to edit!
+    venue: {
+        altar: { 
+            x: 400, y: 200, width: 100, height: 80, 
+            color: '#8B4513', 
+            label: 'Altar' 
+        },
+        reception: { 
+            x: 200, y: 400, width: 150, height: 100, 
+            color: '#228B22', 
+            label: 'Reception' 
+        },
+        danceFloor: { 
+            x: 500, y: 450, width: 120, height: 80, 
+            color: '#FFD700', 
+            label: 'Dance Floor' 
+        },
+        entrance: { 
+            x: 50, y: 50, width: 80, height: 60, 
+            color: '#696969', 
+            label: 'Entrance' 
+        }
+    },
+    
+    // Character positions and colors
+    characters: {
+        groom: {
+            startX: 100,
+            startY: 300,
+            size: 30,
+            speed: 40,
+            color: '#2E86AB',
+            hatColor: '#000',
+            faceColor: '#FFE4C4',
+            acceleration: 0.9,
+            friction: 0.85
+        },
+        bride: {
+            x: 600,
+            y: 250,
+            size: 30,
+            color: '#FF69B4',
+            veilColor: '#FFF',
+            faceColor: '#FFE4C4',
+            crownColor: '#FFD700'
+        }
+    },
+    
+    // Battle moves - customize the romantic moves!
+    moves: {
+        flirt: { 
+            name: 'Flirt', 
+            power: 20, 
+            message: '💋 You give her a charming smile!',
+            emoji: '💋'
+        },
+        kiss: { 
+            name: 'Kiss', 
+            power: 30, 
+            message: '😘 You plant a sweet kiss!',
+            emoji: '😘'
+        },
+        compliment: { 
+            name: 'Compliment', 
+            power: 25, 
+            message: '💝 You tell her she looks beautiful!',
+            emoji: '💝'
+        }
+    },
+    
+    // Game settings
+    settings: {
+        battleThreshold: 100,  // How much charm needed to capture
+        proximityDistance: 60, // How close to start battle
+        interactionDistance: 80, // How close to interact with altar
+        messageDuration: 3000   // How long messages show (ms)
+    },
+    
+    // Wedding details - customize this for your save the date!
+    weddingDetails: {
+        title: '💒 Save The Date! 💒',
+        message: 'We\'re getting married!\n\n[Your wedding details here]\n\nDate: [Your Date]\nVenue: [Your Venue]\nTime: [Your Time]',
+        capturedMessage: '🎉 Congratulations! You captured the Bride! 💒💕'
+    }
+};
+
+// Export for use in game
+if (typeof module !== 'undefined' && module.exports) {
+    module.exports = GAME_CONFIG;
+} 
