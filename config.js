@@ -5,10 +5,53 @@ const GAME_CONFIG = {
     // Venue Layout - Easy to edit!
     // Coordinates are now in world space (2400x1800 world)
     venue: {
+        houseArea: {
+            message: 'I\'m not chickening out,\nI\'m going to get married!',
+            x: 52 * 1.56,
+            y: 522 * 1.76,
+            width: (302 - 52) * 1.56,
+            height: (640 - 522) * 1.76
+        },
+        rightPathArea: {
+            message: 'I don\'t think she went that way...',
+            x: 296 * 1.56,
+            y: 696 * 1.76,
+            width: (455 - 296) * 1.56,
+            height: (802 - 696) * 1.76
+        },
+        downArea: {
+            message: 'Yes I think she went this way.',
+            x: 106 * 1.56,
+            y: 826 * 1.76,
+            width: (194 - 106) * 1.56,
+            height: (966 - 826) * 1.76
+        },
+        perfumeArea: {
+            message: 'I can smell her perfume',
+            x: 546 * 1.56,
+            y: 851 * 1.76,
+            width: (736 - 546) * 1.56,
+            height: (1015 - 851) * 1.76
+        },
         ceremonyArea: { 
-            x: 750, y: 360, width: 540, height: 960, 
+            x: 780, y: 360, width: 510, height: 860, 
+            message: 'Oh my god, I\'m gonna cry...\nShe\'s gorgeous',
             color: '#8B4513', 
             label: 'Ceremony Area' 
+        },
+        duckArea: {
+            message: 'What a cool duck!',
+            x: 950 * 1.56,
+            y: 796 * 1.76,
+            width: (1254 - 950) * 1.56,
+            height: (1002 - 796) * 1.76
+        },
+        receptionArea: {
+            message: 'I hope everyone will dance their ass off',
+            x: 970 * 1.56,
+            y: 504 * 1.76,
+            width: (1376 - 970) * 1.56,
+            height: (686 - 504) * 1.76
         }
     },
     
@@ -16,15 +59,15 @@ const GAME_CONFIG = {
     // Coordinates are now in world space (2400x1800 world)
     characters: {
         groom: {
-            startX: 65 * 3,
-            startY: 400 * 3,
+            startX: 195,
+            startY: 1200,
             size: 48,
             speed: 160
         },
         bride: {
-            x: 1026, // Scaled from original 342
-            y: 540,  // Scaled from original 180
-            size: 36
+            x: 1026,
+            y: 540,
+            size: 44
         }
     },
     
