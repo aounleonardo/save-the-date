@@ -477,8 +477,10 @@ class GameScene extends Phaser.Scene {
     }
     
     createBattleTransition() {
+        // Create a simple white flash (like original Pokémon)
+        this.createBattleFlash();
+        
         // Create a black overlay that covers the entire screen
-        // Use screen coordinates instead of world coordinates
         const screenWidth = this.cameras.main.width;
         const screenHeight = this.cameras.main.height;
         
@@ -489,26 +491,55 @@ class GameScene extends Phaser.Scene {
             screenHeight,
             0x000000
         );
-        this.battleTransition.setDepth(1000); // Very high depth to be on top
+        this.battleTransition.setDepth(1000);
         this.battleTransition.setAlpha(0);
-        
-        // Make it follow the camera so it stays in screen position
         this.battleTransition.setScrollFactor(0);
         
-        // Fade in the transition
+        // Simple fade in (like original Pokémon)
         this.tweens.add({
             targets: this.battleTransition,
             alpha: 1,
-            duration: 500,
+            duration: 600,
             onComplete: () => {
-                // After fade in, show battle UI and fade out
                 this.showBattleUI();
+                // Simple fade out
                 this.tweens.add({
                     targets: this.battleTransition,
                     alpha: 0,
-                    duration: 500,
+                    duration: 600,
                     onComplete: () => {
                         this.battleTransition.destroy();
+                    }
+                });
+            }
+        });
+    }
+    
+    createBattleFlash() {
+        // Create a simple white flash (like original Pokémon)
+        const flash = this.add.rectangle(
+            this.cameras.main.width / 2,
+            this.cameras.main.height / 2,
+            this.cameras.main.width,
+            this.cameras.main.height,
+            0xFFFFFF
+        );
+        flash.setDepth(999);
+        flash.setScrollFactor(0);
+        flash.setAlpha(0);
+        
+        // Simple flash in and out (like original Pokémon)
+        this.tweens.add({
+            targets: flash,
+            alpha: 1,
+            duration: 100,
+            onComplete: () => {
+                this.tweens.add({
+                    targets: flash,
+                    alpha: 0,
+                    duration: 200,
+                    onComplete: () => {
+                        flash.destroy();
                     }
                 });
             }
@@ -531,8 +562,7 @@ class GameScene extends Phaser.Scene {
     }
     
     createExitTransition(callback) {
-        // Create a black overlay that covers the entire screen
-        // Use screen coordinates instead of world coordinates
+        // Create a simple black overlay that covers the entire screen
         const screenWidth = this.cameras.main.width;
         const screenHeight = this.cameras.main.height;
         
@@ -543,24 +573,22 @@ class GameScene extends Phaser.Scene {
             screenHeight,
             0x000000
         );
-        this.exitTransition.setDepth(1000); // Very high depth to be on top
+        this.exitTransition.setDepth(1000);
         this.exitTransition.setAlpha(0);
-        
-        // Make it follow the camera so it stays in screen position
         this.exitTransition.setScrollFactor(0);
         
-        // Fade in the transition
+        // Simple fade in (like original Pokémon)
         this.tweens.add({
             targets: this.exitTransition,
             alpha: 1,
-            duration: 300,
+            duration: 400,
             onComplete: () => {
-                // After fade in, execute callback and fade out
                 callback();
+                // Simple fade out
                 this.tweens.add({
                     targets: this.exitTransition,
                     alpha: 0,
-                    duration: 300,
+                    duration: 400,
                     onComplete: () => {
                         this.exitTransition.destroy();
                     }
