@@ -2,6 +2,17 @@
 
 A fun Pokemon-style game built with Phaser 3 where you, the groom, walk around your wedding venue to capture the bride with romantic moves!
 
+## 🚀 How to Run
+
+1. You must run a local server to load images and assets (opening `index.html` directly will not work in most browsers).
+2. Start a simple server in the project directory (for example, using [http-server](https://www.npmjs.com/package/http-server)):
+   ```
+   npx http-server -p 8000
+   ```
+3. Open [http://localhost:8000/](http://localhost:8000/) in your web browser.
+4. Works on desktop and mobile browsers.
+5. Phaser 3 is loaded from CDN, so an internet connection is required.
+
 ## 🎮 How to Play
 
 1. **Move around**: Use WASD or Arrow Keys to move your character (the groom)
@@ -85,17 +96,6 @@ moves: {
     // Add more moves or modify existing ones
 }
 ```
-
-## 🚀 How to Run
-
-1. You must run a local server to load images and assets (opening `index.html` directly will not work in most browsers).
-2. Start a simple server in the project directory (for example, using [http-server](https://www.npmjs.com/package/http-server)):
-   ```
-   npx http-server -p 8000
-   ```
-3. Open [http://localhost:8000/](http://localhost:8000/) in your web browser.
-4. Works on desktop and mobile browsers.
-5. Phaser 3 is loaded from CDN, so an internet connection is required.
 
 ## 🎨 Adding Custom Assets
 

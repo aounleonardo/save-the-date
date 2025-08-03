@@ -36,12 +36,8 @@ class BootScene extends Phaser.Scene {
             frameHeight: 64 
         });
         
-        // Create colored rectangles as sprites using graphics for bride
-        const brideGraphics = this.make.graphics();
-        brideGraphics.fillStyle(0xFF69B4);
-        brideGraphics.fillCircle(15, 15, 15);
-        brideGraphics.generateTexture('bride', 30, 30);
-        brideGraphics.destroy();
+        // Load bride image
+        this.load.image('bride', 'assets/images/bride.png?v=' + Date.now());
     }
 
     create() {
@@ -141,23 +137,6 @@ class GameScene extends Phaser.Scene {
         this.bride.setDisplaySize(brideConfig.size, brideConfig.size);
         this.bride.captured = false;
         this.bride.setDepth(3);
-        
-        // Add bride details (veil, face, crown)
-        this.brideVeil = this.add.rectangle(
-            this.bride.x, this.bride.y - 10, 30, 15,
-            Phaser.Display.Color.ValueToColor(brideConfig.veilColor).color
-        );
-        this.brideVeil.setDepth(4);
-        this.brideFace = this.add.circle(
-            this.bride.x, this.bride.y - 5, 8,
-            Phaser.Display.Color.ValueToColor(brideConfig.faceColor).color
-        );
-        this.brideFace.setDepth(4);
-        this.brideCrown = this.add.rectangle(
-            this.bride.x, this.bride.y - 15, 20, 5,
-            Phaser.Display.Color.ValueToColor(brideConfig.crownColor).color
-        );
-        this.brideCrown.setDepth(4);
     }
 
     setupInput() {
@@ -202,7 +181,6 @@ class GameScene extends Phaser.Scene {
     update() {
         if (this.gameState === 'exploring') {
             this.handleMovement();
-            this.updateCharacterDetails();
             this.checkProximityToBride();
         }
     }
@@ -235,15 +213,6 @@ class GameScene extends Phaser.Scene {
         // Check for interaction
         if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
             this.checkInteraction();
-        }
-    }
-
-    updateCharacterDetails() {
-        // Update bride details position
-        if (!this.bride.captured) {
-            this.brideVeil.setPosition(this.bride.x, this.bride.y - 10);
-            this.brideFace.setPosition(this.bride.x, this.bride.y - 5);
-            this.brideCrown.setPosition(this.bride.x, this.bride.y - 15);
         }
     }
     
@@ -445,10 +414,6 @@ class GameScene extends Phaser.Scene {
         
         this.showMessage(this.weddingDetails.capturedMessage);
         
-        // Hide bride details
-        this.brideVeil.setVisible(false);
-        this.brideFace.setVisible(false);
-        this.brideCrown.setVisible(false);
         this.bride.setVisible(false);
         
         setTimeout(() => {

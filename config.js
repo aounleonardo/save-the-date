@@ -17,19 +17,12 @@ const GAME_CONFIG = {
             startX: 72,
             startY: 450,
             size: 48,
-            speed: 100,
-            color: '#2E86AB',
-            hatColor: '#000',
-            faceColor: '#FFE4C4'
+            speed: 100
         },
         bride: {
             x: 342,
             y: 180,
-            size: 30,
-            color: '#FF69B4',
-            veilColor: '#FFF',
-            faceColor: '#FFE4C4',
-            crownColor: '#FFD700'
+            size: 36
         }
     },
     
