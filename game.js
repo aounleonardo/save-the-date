@@ -30,8 +30,26 @@ class BootScene extends Phaser.Scene {
         // Load background image
         this.load.image('background', 'assets/images/background.png');
         
-        // Load groom sprite sheet with cache-busting
-        this.load.spritesheet('groom', 'assets/images/groom_sprite_sheet.png?v=' + Date.now(), { 
+        // Load groom sprite sheets with cache-busting
+        this.load.spritesheet('groom', 'assets/images/groom_spritesheet_down.png?v=' + Date.now(), { 
+            frameWidth: 64, 
+            frameHeight: 64 
+        });
+        
+        // Load groom walking right sprite sheet
+        this.load.spritesheet('groom-right', 'assets/images/groom_spritesheet_right.png?v=' + Date.now(), { 
+            frameWidth: 64, 
+            frameHeight: 64 
+        });
+        
+        // Load groom walking left sprite sheet
+        this.load.spritesheet('groom-left', 'assets/images/groom_spritesheet_left.png?v=' + Date.now(), { 
+            frameWidth: 64, 
+            frameHeight: 64 
+        });
+        
+        // Load groom walking up sprite sheet
+        this.load.spritesheet('groom-up', 'assets/images/groom_spritesheet_up.png?v=' + Date.now(), { 
             frameWidth: 64, 
             frameHeight: 64 
         });
@@ -160,23 +178,84 @@ class GameScene extends Phaser.Scene {
     }
     
     setupGroomAnimation() {
-        // Create walking animation from sprite sheet - use 4 frames (1x4 layout)
+        // Create walking animations for different directions
+        // Down walking (original spritesheet)
         this.anims.create({
-            key: 'groom-walk',
+            key: 'groom-walk-down',
             frames: [
                 { key: 'groom', frame: 0 },
                 { key: 'groom', frame: 1 },
                 { key: 'groom', frame: 2 },
                 { key: 'groom', frame: 3 }
             ],
-            frameRate: 8, // Normal speed for 4 frames
-            repeat: -1 // Loop infinitely
+            frameRate: 8,
+            repeat: -1
         });
         
-        // Create idle animation (first frame)
+        // Right walking (new spritesheet)
         this.anims.create({
-            key: 'groom-idle',
-            frames: [{ key: 'groom', frame: 0 }], // Just the first frame
+            key: 'groom-walk-right',
+            frames: [
+                { key: 'groom-right', frame: 0 },
+                { key: 'groom-right', frame: 1 },
+                { key: 'groom-right', frame: 2 },
+                { key: 'groom-right', frame: 3 }
+            ],
+            frameRate: 8,
+            repeat: -1
+        });
+        
+        // Left walking (new spritesheet)
+        this.anims.create({
+            key: 'groom-walk-left',
+            frames: [
+                { key: 'groom-left', frame: 0 },
+                { key: 'groom-left', frame: 1 },
+                { key: 'groom-left', frame: 2 },
+                { key: 'groom-left', frame: 3 }
+            ],
+            frameRate: 8,
+            repeat: -1
+        });
+        
+        // Up walking (new spritesheet)
+        this.anims.create({
+            key: 'groom-walk-up',
+            frames: [
+                { key: 'groom-up', frame: 0 },
+                { key: 'groom-up', frame: 1 },
+                { key: 'groom-up', frame: 2 },
+                { key: 'groom-up', frame: 3 }
+            ],
+            frameRate: 8,
+            repeat: -1
+        });
+        
+        // Create idle animations for different directions
+        this.anims.create({
+            key: 'groom-idle-down',
+            frames: [{ key: 'groom', frame: 0 }],
+            frameRate: 1,
+            repeat: 0
+        });
+        
+        this.anims.create({
+            key: 'groom-idle-right',
+            frames: [{ key: 'groom-right', frame: 0 }],
+            frameRate: 1,
+            repeat: 0
+        });
+        
+        this.anims.create({
+            key: 'groom-idle-left',
+            frames: [{ key: 'groom-left', frame: 0 }],
+            frameRate: 1,
+            repeat: 0
+        });
+        
+        this.anims.create({
+            key: 'groom-idle-up',
+            frames: [{ key: 'groom-up', frame: 0 }],
             frameRate: 1,
             repeat: 0
         });
@@ -196,6 +275,9 @@ class GameScene extends Phaser.Scene {
         this.groom.isMoving = false;
         this.groom.lastVelocityX = 0;
         this.groom.lastVelocityY = 0;
+        
+        // Start with idle animation
+        this.groom.play('groom-idle-down');
         
         // Create bride at the configured position in world space
         this.bride = this.physics.add.sprite(brideConfig.x, brideConfig.y, 'bride');
@@ -342,23 +424,52 @@ class GameScene extends Phaser.Scene {
         const velocityY = this.groom.body.velocity.y;
         const isMoving = velocityX !== 0 || velocityY !== 0;
         
-        // Check if movement state changed
+        // Determine direction and appropriate animation
+        let animationKey = 'groom-idle-down'; // Default idle animation
+        
+        if (isMoving) {
+            // Determine which direction the groom is moving
+            if (velocityX > 0) {
+                // Moving right
+                animationKey = 'groom-walk-right';
+            } else if (velocityX < 0) {
+                // Moving left
+                animationKey = 'groom-walk-left';
+            } else if (velocityY > 0) {
+                // Moving down
+                animationKey = 'groom-walk-down';
+            } else if (velocityY < 0) {
+                // Moving up
+                animationKey = 'groom-walk-up';
+            }
+        } else {
+            // Idle state - use last direction
+            if (this.groom.lastVelocityX > 0) {
+                animationKey = 'groom-idle-right';
+            } else if (this.groom.lastVelocityX < 0) {
+                animationKey = 'groom-idle-left';
+            } else if (this.groom.lastVelocityY > 0) {
+                animationKey = 'groom-idle-down';
+            } else if (this.groom.lastVelocityY < 0) {
+                animationKey = 'groom-idle-up';
+            }
+        }
+        
+        // Check if movement state changed or if we need to change animation
         if (isMoving !== this.groom.isMoving) {
             this.groom.isMoving = isMoving;
-            
-            if (isMoving) {
-                // Start walking animation when moving
-                this.groom.play('groom-walk');
-            } else {
-                // Play idle animation when stopped
-                this.groom.play('groom-idle');
-            }
+            this.groom.play(animationKey);
+        } else if (isMoving && this.groom.anims.currentAnim && this.groom.anims.currentAnim.key !== animationKey) {
+            // If we're moving but the animation doesn't match, change it
+            this.groom.play(animationKey);
         }
         
         // Update last velocity for direction detection
         this.groom.lastVelocityX = velocityX;
         this.groom.lastVelocityY = velocityY;
     }
+    
+
 
     checkProximityToBride() {
         if (this.bride.captured) return;
