@@ -222,11 +222,8 @@
             transform: none;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-        }
+
+
 
 
 
@@ -253,6 +250,34 @@
 
         .move-argument {
             border-color: #FF6B35;
+        }
+
+        /* Custom tooltip */
+        .custom-tooltip {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            white-space: nowrap;
+            z-index: 10000;
+            pointer-events: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .custom-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .custom-tooltip.hidden {
+            display: none;
         }
 
         /* Pokéball throwing animation */
@@ -407,7 +432,7 @@
                     <button id="kissBtn" class="move-kiss">😘 Kiss</button>
                     <button id="complimentBtn" class="move-compliment">💝 Compliment</button>
                     <button id="argumentBtn" class="move-argument">🧠 Start an argument</button>
-                    <button id="pokeballBtn" class="move-pokeball">⚪ Pokeball</button>
+                    <button id="pokeballBtn" class="move-pokeball">🎾 Throw Pokeball</button>
                     <button id="runBtn" class="move-run">🏃 Run</button>
                 </div>
             </div>
@@ -419,6 +444,7 @@
     </div>
 
     <div id="messageBox" class="hidden"></div>
+    <div id="customTooltip" class="custom-tooltip hidden"></div>
 
     <script src="config.js"></script>
     <script src="game.js"></script>

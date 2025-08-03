@@ -314,6 +314,25 @@ class GameScene extends Phaser.Scene {
         document.getElementById('complimentBtn').addEventListener('click', () => this.useMove('compliment'));
         document.getElementById('argumentBtn').addEventListener('click', () => this.useArgument());
         document.getElementById('pokeballBtn').addEventListener('click', () => this.usePokeball());
+        
+        // Setup instant tooltip for pokeball button
+        const pokeballBtn = document.getElementById('pokeballBtn');
+        const tooltip = document.getElementById('customTooltip');
+        
+        pokeballBtn.addEventListener('mouseenter', (e) => {
+            if (pokeballBtn.disabled) {
+                tooltip.textContent = 'You need to charm the bride first before you can throw the Pokeball!';
+                tooltip.classList.remove('hidden');
+                
+                const rect = pokeballBtn.getBoundingClientRect();
+                tooltip.style.left = rect.left + (rect.width / 2) + 'px';
+                tooltip.style.top = (rect.top - 10) + 'px';
+            }
+        });
+        
+        pokeballBtn.addEventListener('mouseleave', () => {
+            tooltip.classList.add('hidden');
+        });
         document.getElementById('runBtn').addEventListener('click', () => this.runFromBattle());
     }
 
