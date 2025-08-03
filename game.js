@@ -732,9 +732,9 @@ class GameScene extends Phaser.Scene {
             
             this.bride.setVisible(false);
             
-            setTimeout(() => {
-                this.showMessage(this.weddingDetails.title + '\n' + this.weddingDetails.message);
-            }, 3000);
+                    setTimeout(() => {
+            this.showPermanentMessage(this.weddingDetails.title + '\n' + this.weddingDetails.message);
+        }, 3000);
         });
     }
 
@@ -768,7 +768,7 @@ class GameScene extends Phaser.Scene {
         });
     }
 
-    showMessage(message) {
+        showMessage(message) {
         const messageText = this.add.text(this.groom.x, this.groom.y - 80, message, {
             fontSize: '16px',
             fill: '#ffffff',
@@ -779,7 +779,7 @@ class GameScene extends Phaser.Scene {
         });
         messageText.setOrigin(0.5);
         messageText.setDepth(10); // Always on top
-
+        
         // Animate the message (fade in, stay, fade out)
         messageText.setAlpha(0);
         this.tweens.add({
@@ -799,6 +799,30 @@ class GameScene extends Phaser.Scene {
                     });
                 });
             }
+        });
+    }
+    
+    showPermanentMessage(message) {
+        const messageText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, message, {
+            fontSize: '24px',
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 4,
+            backgroundColor: '#000000',
+            padding: { x: 20, y: 10 },
+            align: 'center'
+        });
+        messageText.setOrigin(0.5);
+        messageText.setDepth(1000); // Very high depth to be on top
+        messageText.setScrollFactor(0); // Stay fixed to screen
+        
+        // Fade in only, no fade out
+        messageText.setAlpha(0);
+        this.tweens.add({
+            targets: messageText,
+            alpha: 1,
+            duration: 1000,
+            ease: 'Power2'
         });
     }
 }

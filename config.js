@@ -103,7 +103,17 @@ const GAME_CONFIG = {
     // Wedding details - customize this for your save the date!
     weddingDetails: {
         title: '💒 Save The Date! 💒',
-        message: 'We\'re getting married!\n\n[Your wedding details here]\n\nDate: [Your Date]\nVenue: [Your Venue]\nTime: [Your Time]',
+        message: [
+            "We're getting married!",
+            "",
+            "Please join us in our celebrations.",
+            "",
+            "Date: July 18, 2025",
+            "Venue: Villa Acra, Lebanon",
+            "Secular ceremony @ 5:00 PM",
+            "Party and dinner @ 6:00 PM",
+            "After party from 12:30 AM to 4:00 AM"
+        ].join('\n'),
         capturedMessage: '🎉 Congratulations! You captured the Bride! 💒💕'
     }
 };
