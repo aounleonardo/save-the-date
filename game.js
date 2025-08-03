@@ -56,6 +56,8 @@ class BootScene extends Phaser.Scene {
 
         // Load bride image
         this.load.image('bride', 'assets/images/bride.png?v=' + Date.now());
+        // Load battle bride image
+        this.load.image('battle-bride', 'assets/images/battle_bride.png?v=' + Date.now());
     }
 
     create() {
