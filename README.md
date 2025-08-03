@@ -1,124 +1,117 @@
-# 💒 Wedding Save The Date Game 💒
+# 💒 Wedding Save The Date Game
 
-A fun Pokemon-style game built with Phaser 3 where you, the groom, walk around your wedding venue to capture the bride with romantic moves!
-
-## 🚀 How to Run
-
-1. You must run a local server to load images and assets (opening `index.html` directly will not work in most browsers).
-2. Start a simple server in the project directory (for example, using [http-server](https://www.npmjs.com/package/http-server)):
-   ```
-   npx http-server -p 8000
-   ```
-3. Open [http://localhost:8000/](http://localhost:8000/) in your web browser.
-4. Works on desktop and mobile browsers.
-5. Phaser 3 is loaded from CDN, so an internet connection is required.
+A Pokemon-style wedding save-the-date game built with HTML5, JavaScript, and Phaser.js.
 
 ## 🎮 How to Play
 
-1. **Move around**: Use WASD or Arrow Keys to move your character (the groom)
-2. **Explore the venue**: Walk around the different areas (altar, reception, dance floor, entrance)
-3. **Find the bride**: Get close to the bride sprite to start a battle
-4. **Charm the bride**: Use romantic moves like Flirt, Kiss, and Compliment
-5. **Capture with Pokeball**: Once the charm meter is full, use the Pokeball to capture the bride
-6. **Save the Date**: After capturing, your wedding details will be displayed!
+- Use **WASD** or **Arrow Keys** to move the groom around the venue
+- Explore different areas to see romantic messages
+- When you get close to the bride, a Pokemon-style battle begins!
+- Use romantic moves like Flirt, Kiss, and Compliment to win her heart
+- Throw a Pokeball to capture the bride and see your save-the-date!
 
-## 🎯 Game Features
+## 🚀 Deployment Options
 
-- **Built with Phaser 3**: Professional game engine with physics, sprites, and scene management
-- **Smooth Character Movement**: Physics-based movement with proper collision detection
-- **Venue Exploration**: Multiple areas to explore (altar, reception, dance floor, entrance)
-- **Battle System**: Pokemon-style battle with romantic moves instead of fighting
-- **Charm Meter**: Build up charm to capture the bride
-- **Customizable**: Easy to edit venue layout, colors, and wedding details
+### Option 1: GitHub Pages (Recommended - Free)
 
-## 🛠️ Customization
+1. **Create a GitHub repository:**
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git branch -M main
+   git remote add origin https://github.com/YOUR_USERNAME/wedding-save-the-date.git
+   git push -u origin main
+   ```
 
-### Easy Venue Layout Editing
+2. **Enable GitHub Pages:**
+   - Go to your repository on GitHub
+   - Click "Settings" → "Pages"
+   - Select "Deploy from a branch"
+   - Choose "main" branch and "/ (root)" folder
+   - Click "Save"
 
-Open `config.js` to customize:
+3. **Your game will be available at:**
+   `https://YOUR_USERNAME.github.io/wedding-save-the-date`
 
-```javascript
-venue: {
-    altar: { 
-        x: 400, y: 200, width: 100, height: 80, 
-        color: '#8B4513', 
-        label: 'Altar' 
-    },
-    // Add more areas or modify existing ones
-}
+### Option 2: Netlify (Free)
+
+1. **Drag and drop deployment:**
+   - Go to [netlify.com](https://netlify.com)
+   - Drag your entire project folder to the deploy area
+   - Your site will be live instantly!
+
+2. **Connect your domain:**
+   - In Netlify dashboard, go to "Domain settings"
+   - Add your custom domain
+   - Follow the DNS configuration instructions
+
+### Option 3: Vercel (Free)
+
+1. **Install Vercel CLI:**
+   ```bash
+   npm install -g vercel
+   ```
+
+2. **Deploy:**
+   ```bash
+   vercel
+   ```
+
+3. **Follow the prompts and your site will be live!**
+
+### Option 4: Traditional Web Hosting
+
+Upload these files to any web hosting service:
+- `index.html`
+- `game.js`
+- `config.js`
+- `assets/` folder (with all images)
+
+## 🎨 Customization
+
+Edit `config.js` to customize:
+- Wedding details (date, venue, time)
+- Character positions and colors
+- Battle moves and messages
+- Venue areas and messages
+
+## 📁 Project Structure
+
+```
+wedding-save-the-date/
+├── index.html          # Main HTML file
+├── game.js            # Game logic (Phaser.js)
+├── config.js          # Game configuration
+├── assets/
+│   └── images/        # Game sprites and backgrounds
+└── README.md          # This file
 ```
 
-### Wedding Details
+## 🛠️ Local Development
 
-Edit the wedding details in `config.js`:
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/wedding-save-the-date.git
+   cd wedding-save-the-date
+   ```
 
-```javascript
-weddingDetails: {
-    title: '💒 Save The Date! 💒',
-    message: 'We\'re getting married!\n\nDate: [Your Date]\nVenue: [Your Venue]\nTime: [Your Time]',
-    capturedMessage: '🎉 Congratulations! You captured the Bride! 💒💕'
-}
-```
+2. **Open in browser:**
+   - Double-click `index.html` or
+   - Use a local server: `python -m http.server 8000`
 
-### Character Customization
+## 🌟 Features
 
-Modify character positions and colors:
+- **Pokemon-style battle system** with romantic moves
+- **Interactive venue exploration** with hidden messages
+- **Customizable wedding details** in config file
+- **Responsive design** that works on desktop and mobile
+- **Beautiful animations** and visual effects
 
-```javascript
-characters: {
-    groom: {
-        startX: 100,
-        startY: 300,
-        color: '#2E86AB',
-        // ... more options
-    },
-    bride: {
-        x: 600,
-        y: 250,
-        color: '#FF69B4',
-        // ... more options
-    }
-}
-```
+## 💝 Perfect for Save-the-Dates!
 
-### Battle Moves
-
-Customize the romantic moves:
-
-```javascript
-moves: {
-    flirt: { 
-        name: 'Flirt', 
-        power: 20, 
-        message: '💋 You give her a charming smile!',
-        emoji: '💋'
-    },
-    // Add more moves or modify existing ones
-}
-```
-
-## 🎨 Adding Custom Assets
-
-To add custom images or sprites:
-
-1. Create an `assets/` folder
-2. Add your image files
-3. Modify the drawing functions in `game.js` to use your images instead of shapes
-
-## 📱 Mobile Support
-
-The game works on mobile devices! Touch controls can be added by modifying the event listeners in `game.js`.
-
-## 💝 Perfect for Save The Dates
-
-This game is perfect for:
-- Wedding save the dates
-- Engagement announcements
-- Wedding website entertainment
-- Pre-wedding events
-
-Just customize the wedding details and venue layout to match your special day!
+This game makes a unique and memorable save-the-date that guests will love to play. Customize the wedding details in `config.js` to make it personal to your special day!
 
 ---
 
-**Made with 💕 for your special day!** 
+Made with ❤️ for your special day! 

@@ -671,11 +671,18 @@ class GameScene extends Phaser.Scene {
         this.updateHealthBars();
         this.updateBattleMessage(move.message);
 
-        const button = document.getElementById(moveType + 'Btn');
-        button.disabled = true;
+        const moveButtons = Object.keys(this.moves).map(move => move + 'Btn');
+        moveButtons.forEach(id => {
+            const btn = document.getElementById(id);
+            if (btn) btn.disabled = true;
+        });
         setTimeout(() => {
-            button.disabled = false;
-        }, 1000);
+            moveButtons.forEach(id => {
+                const btn = document.getElementById(id);
+                // Only re-enable if not permanently disabled (e.g., argumentBtn after use)
+                if (btn && btn.style.opacity !== '0.5') btn.disabled = false;
+            });
+        }, 2000);
 
         // Check if bride is defeated
         if (this.brideHP <= 0) {
@@ -690,7 +697,7 @@ class GameScene extends Phaser.Scene {
                 this.groomHP = Math.max(0, this.groomHP - counterDamage);
                 this.updateHealthBars();
                 this.updateBattleMessage(`Ghinwa blushes! Leonardo took ${counterDamage} damage! 💕`);
-            }, 500);
+            }, 1000);
         }
     }
 
