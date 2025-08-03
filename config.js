@@ -3,25 +3,27 @@
 
 const GAME_CONFIG = {
     // Venue Layout - Easy to edit!
+    // Coordinates are now in world space (2400x1800 world)
     venue: {
         ceremonyArea: { 
-            x: 250, y: 120, width: 180, height: 320, 
+            x: 750, y: 360, width: 540, height: 960, 
             color: '#8B4513', 
             label: 'Ceremony Area' 
         }
     },
     
     // Character positions and colors
+    // Coordinates are now in world space (2400x1800 world)
     characters: {
         groom: {
-            startX: 72,
-            startY: 450,
+            startX: 65 * 3,
+            startY: 400 * 3,
             size: 48,
-            speed: 100
+            speed: 160
         },
         bride: {
-            x: 342,
-            y: 180,
+            x: 1026, // Scaled from original 342
+            y: 540,  // Scaled from original 180
             size: 36
         }
     },

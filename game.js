@@ -50,13 +50,18 @@ class GameScene extends Phaser.Scene {
         super({ key: 'GameScene' });
         this.gameState = 'exploring';
         this.battleProgress = 0;
+        
+        // World dimensions - much larger than the visible canvas
+        this.worldWidth = 2400;  // 3x the canvas width
+        this.worldHeight = 1800; // 3x the canvas height
     }
 
     create() {
-        // Add background image - set it to cover the entire game area
-        const background = this.add.image(400, 300, 'background');
-        background.setDisplaySize(800, 600);
-        background.setDepth(0); // Ensure it's behind everything
+        // Set world bounds for the larger world
+        this.physics.world.setBounds(0, 0, this.worldWidth, this.worldHeight);
+        
+        // Create a larger background by tiling or scaling
+        this.createWorldBackground();
         
         // Create venue areas
         this.createVenue();
@@ -75,12 +80,72 @@ class GameScene extends Phaser.Scene {
         
         // Setup battle system
         this.setupBattleSystem();
+        
+        // Setup camera to follow the player
+        this.setupCamera();
+    }
+
+    createWorldBackground() {
+        // Create a single large background that covers the entire world
+        const background = this.add.image(this.worldWidth / 2, this.worldHeight / 2, 'background');
+        background.setDisplaySize(this.worldWidth, this.worldHeight);
+        background.setDepth(0);
+        
+        // Add some decorative elements to make the world feel more alive
+        this.addDecorativeElements();
+    }
+    
+    addDecorativeElements() {
+        // Add some decorative elements scattered around the world
+        const numDecorations = 20;
+        
+        for (let i = 0; i < numDecorations; i++) {
+            const x = Math.random() * this.worldWidth;
+            const y = Math.random() * this.worldHeight;
+            
+            // Create a simple decorative circle
+            const decoration = this.add.circle(x, y, Math.random() * 10 + 5, 0xFFFFFF, 0.1);
+            decoration.setDepth(1);
+        }
+        
+        // Add world boundary indicators
+        this.addWorldBoundaries();
+    }
+    
+    addWorldBoundaries() {
+        // Add subtle boundary indicators at the edges of the world
+        const boundaryColor = 0x444444;
+        const boundaryAlpha = 0.3;
+        
+        // Top boundary
+        this.add.rectangle(this.worldWidth/2, 10, this.worldWidth, 20, boundaryColor, boundaryAlpha);
+        
+        // Bottom boundary
+        this.add.rectangle(this.worldWidth/2, this.worldHeight - 10, this.worldWidth, 20, boundaryColor, boundaryAlpha);
+        
+        // Left boundary
+        this.add.rectangle(10, this.worldHeight/2, 20, this.worldHeight, boundaryColor, boundaryAlpha);
+        
+        // Right boundary
+        this.add.rectangle(this.worldWidth - 10, this.worldHeight/2, 20, this.worldHeight, boundaryColor, boundaryAlpha);
+    }
+    
+    setupCamera() {
+        // Set up the camera to follow the player
+        this.cameras.main.setBounds(0, 0, this.worldWidth, this.worldHeight);
+        this.cameras.main.startFollow(this.groom, true, 0.1, 0.1);
+        
+        // Set the camera to a fixed zoom level
+        this.cameras.main.setZoom(1.5); // Adjust this value to experiment with different zoom levels
+        
+        // Optional: Add some camera shake or effects later
     }
 
     createVenue() {
         const venue = GAME_CONFIG.venue;
         
         // Create invisible ceremony area for interaction
+        // Note: These coordinates are now in world space, not screen space
         this.ceremonyArea = this.add.rectangle(
             venue.ceremonyArea.x + venue.ceremonyArea.width/2,
             venue.ceremonyArea.y + venue.ceremonyArea.height/2,
@@ -132,7 +197,7 @@ class GameScene extends Phaser.Scene {
         this.groom.lastVelocityX = 0;
         this.groom.lastVelocityY = 0;
         
-        // Create bride
+        // Create bride at the configured position in world space
         this.bride = this.physics.add.sprite(brideConfig.x, brideConfig.y, 'bride');
         this.bride.setDisplaySize(brideConfig.size, brideConfig.size);
         this.bride.captured = false;
@@ -155,12 +220,37 @@ class GameScene extends Phaser.Scene {
         this.battleMessage = document.getElementById('battleMessage');
         this.messageBox = document.getElementById('messageBox');
         
+        // Create coordinate display
+        this.createCoordinateDisplay();
+        
         // Battle menu event listeners
         document.getElementById('flirtBtn').addEventListener('click', () => this.useMove('flirt'));
         document.getElementById('kissBtn').addEventListener('click', () => this.useMove('kiss'));
         document.getElementById('complimentBtn').addEventListener('click', () => this.useMove('compliment'));
         document.getElementById('pokeballBtn').addEventListener('click', () => this.usePokeball());
         document.getElementById('runBtn').addEventListener('click', () => this.runFromBattle());
+    }
+    
+    createCoordinateDisplay() {
+        // Create a text object to display player coordinates
+        this.coordinateText = this.add.text(10, 10, '', {
+            fontSize: '16px',
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 2
+        });
+        this.coordinateText.setDepth(10); // Always on top
+        this.coordinateText.setScrollFactor(0); // Don't move with camera
+        
+        // Create area indicator
+        this.areaIndicator = this.add.text(10, 40, '', {
+            fontSize: '14px',
+            fill: '#ffff00',
+            stroke: '#000000',
+            strokeThickness: 2
+        });
+        this.areaIndicator.setDepth(10);
+        this.areaIndicator.setScrollFactor(0);
     }
 
     setupBattleSystem() {
@@ -182,6 +272,37 @@ class GameScene extends Phaser.Scene {
         if (this.gameState === 'exploring') {
             this.handleMovement();
             this.checkProximityToBride();
+            this.updateCoordinateDisplay();
+        }
+    }
+    
+    updateCoordinateDisplay() {
+        // Update coordinate display with player position
+        const x = Math.round(this.groom.x);
+        const y = Math.round(this.groom.y);
+        this.coordinateText.setText(`Position: (${x}, ${y})`);
+        
+        // Update area indicator
+        this.updateAreaIndicator(x, y);
+    }
+    
+    updateAreaIndicator(x, y) {
+        const ceremonyConfig = GAME_CONFIG.venue.ceremonyArea;
+        const areaLeft = ceremonyConfig.x;
+        const areaRight = ceremonyConfig.x + ceremonyConfig.width;
+        const areaTop = ceremonyConfig.y;
+        const areaBottom = ceremonyConfig.y + ceremonyConfig.height;
+        
+        if (x >= areaLeft && x <= areaRight && y >= areaTop && y <= areaBottom) {
+            this.areaIndicator.setText('📍 In Ceremony Area');
+            this.areaIndicator.setFill('#00ff00');
+        } else {
+            // Calculate distance to ceremony area
+            const centerX = (areaLeft + areaRight) / 2;
+            const centerY = (areaTop + areaBottom) / 2;
+            const distance = Math.round(Phaser.Math.Distance.Between(x, y, centerX, centerY));
+            this.areaIndicator.setText(`🎯 Ceremony Area: ${distance}px away`);
+            this.areaIndicator.setFill('#ffff00');
         }
     }
 
@@ -256,6 +377,7 @@ class GameScene extends Phaser.Scene {
         const ceremonyConfig = GAME_CONFIG.venue.ceremonyArea;
         
         // Check if groom is inside the ceremony area bounds
+        // These coordinates are now in world space
         const groomX = this.groom.x;
         const groomY = this.groom.y;
         const areaLeft = ceremonyConfig.x;
@@ -431,9 +553,9 @@ class GameScene extends Phaser.Scene {
         this.groom.x = this.bride.x + Math.cos(angle) * distance;
         this.groom.y = this.bride.y + Math.sin(angle) * distance;
         
-        // Keep groom in bounds
-        this.groom.x = Math.max(this.groom.width/2, Math.min(this.game.config.width - this.groom.width/2, this.groom.x));
-        this.groom.y = Math.max(this.groom.height/2, Math.min(this.game.config.height - this.groom.height/2, this.groom.y));
+        // Keep groom in world bounds
+        this.groom.x = Math.max(this.groom.width/2, Math.min(this.worldWidth - this.groom.width/2, this.groom.x));
+        this.groom.y = Math.max(this.groom.height/2, Math.min(this.worldHeight - this.groom.height/2, this.groom.y));
         
         // Stop movement
         this.groom.setVelocity(0, 0);
