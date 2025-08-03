@@ -101,8 +101,7 @@ const GAME_CONFIG = {
     
     // Game settings
     settings: {
-        // proximityDistance: 60, // How close to start battle
-        proximityDistance: 10000, // How close to start battle
+        proximityDistance: 60, // How close to start battle
         messageDuration: 3000   // How long messages show (ms)
     },
     
