@@ -15,9 +15,9 @@ const GAME_CONFIG = {
         rightPathArea: {
             message: 'I don\'t think she went that way...',
             x: 296 * 1.56,
-            y: 696 * 1.76,
+            y: 646 * 1.76,
             width: (455 - 296) * 1.56,
-            height: (802 - 696) * 1.76
+            height: (802 - 646) * 1.76
         },
         downArea: {
             message: 'Yes I think she went this way.',
