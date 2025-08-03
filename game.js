@@ -64,11 +64,12 @@ class BootScene extends Phaser.Scene {
 }
 
 class GameScene extends Phaser.Scene {
-    constructor() {
+        constructor() {
         super({ key: 'GameScene' });
         this.gameState = 'exploring';
         this.battleProgress = 0;
-
+        this.battleCooldown = false;
+        
         // World dimensions - much larger than the visible canvas
         this.worldWidth = 2400;  // 3x the canvas width
         this.worldHeight = 1800; // 3x the canvas height
@@ -419,14 +420,17 @@ class GameScene extends Phaser.Scene {
 
 
 
-    checkProximityToBride() {
+        checkProximityToBride() {
         if (this.bride.captured) return;
-
+        
+        // Don't start battle if cooldown is active
+        if (this.battleCooldown) return;
+        
         const distance = Phaser.Math.Distance.Between(
             this.groom.x, this.groom.y,
             this.bride.x, this.bride.y
         );
-
+        
         if (distance < this.settings.proximityDistance) {
             this.startBattle();
         }
@@ -737,24 +741,29 @@ class GameScene extends Phaser.Scene {
         runFromBattle() {
         this.gameState = 'exploring';
         
+        // Move groom away immediately to prevent re-trigger
+        const angle = Phaser.Math.Angle.Between(this.bride.x, this.bride.y, this.groom.x, this.groom.y);
+        const distance = 200; // Move 200 pixels away
+        this.groom.x = this.bride.x + Math.cos(angle) * distance;
+        this.groom.y = this.bride.y + Math.sin(angle) * distance;
+        
+        // Keep groom in world bounds
+        this.groom.x = Math.max(this.groom.width / 2, Math.min(this.worldWidth - this.groom.width / 2, this.groom.x));
+        this.groom.y = Math.max(this.groom.height / 2, Math.min(this.worldHeight - this.groom.height / 2, this.groom.y));
+        
+        // Stop movement
+        this.groom.setVelocity(0, 0);
+        
+        // Add a cooldown period to prevent immediate re-trigger
+        this.battleCooldown = true;
+        this.time.delayedCall(2000, () => {
+            this.battleCooldown = false;
+        });
+        
         // Create exit transition
         this.createExitTransition(() => {
-            // After transition, hide battle UI and move groom
+            // After transition, hide battle UI
             this.battleOverlay.classList.add('hidden');
-            
-            // Move groom away from bride to prevent immediate re-trigger
-            const angle = Phaser.Math.Angle.Between(this.bride.x, this.bride.y, this.groom.x, this.groom.y);
-            const distance = 100; // Move 100 pixels away
-            this.groom.x = this.bride.x + Math.cos(angle) * distance;
-            this.groom.y = this.bride.y + Math.sin(angle) * distance;
-            
-            // Keep groom in world bounds
-            this.groom.x = Math.max(this.groom.width / 2, Math.min(this.worldWidth - this.groom.width / 2, this.groom.x));
-            this.groom.y = Math.max(this.groom.height / 2, Math.min(this.worldHeight - this.groom.height / 2, this.groom.y));
-            
-            // Stop movement
-            this.groom.setVelocity(0, 0);
-            
             this.showMessage('🏃 You ran away from the battle...');
         });
     }
