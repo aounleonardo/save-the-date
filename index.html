@@ -184,37 +184,51 @@
         .battle-actions {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 5px;
-            padding: 10px;
-            height: 80px;
+            gap: 8px;
+            padding: 15px;
+            height: 140px;
         }
 
         .battle-actions button {
-            background: linear-gradient(to bottom, #fff, #ddd);
-            border: 2px solid #333;
-            border-radius: 5px;
-            padding: 8px;
-            font-size: 12px;
+            background: linear-gradient(to bottom, #f8f8f8, #e0e0e0);
+            border: 3px solid #2c2c2c;
+            border-radius: 8px;
+            padding: 12px 8px;
+            font-size: 13px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .battle-actions button:hover {
+            background: linear-gradient(to bottom, #fff, #f0f0f0);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .battle-actions button:active {
+            transform: translateY(0px);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        .battle-actions button:disabled {
+            background: linear-gradient(to bottom, #ccc, #aaa);
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 5px;
         }
 
-        .battle-actions button:hover {
-            background: linear-gradient(to bottom, #ddd, #bbb);
-            transform: translateY(-1px);
-        }
 
-        .battle-actions button:disabled {
-            background: #ccc;
-            color: #666;
-            cursor: not-allowed;
-            transform: none;
-        }
 
         /* Move buttons with colors */
         .move-flirt {
@@ -235,6 +249,10 @@
 
         .move-run {
             border-color: #666;
+        }
+
+        .move-argument {
+            border-color: #FF6B35;
         }
 
         /* Pokéball throwing animation */
@@ -388,6 +406,7 @@
                     <button id="flirtBtn" class="move-flirt">💋 Flirt</button>
                     <button id="kissBtn" class="move-kiss">😘 Kiss</button>
                     <button id="complimentBtn" class="move-compliment">💝 Compliment</button>
+                    <button id="argumentBtn" class="move-argument">🧠 Start an argument</button>
                     <button id="pokeballBtn" class="move-pokeball">⚪ Pokeball</button>
                     <button id="runBtn" class="move-run">🏃 Run</button>
                 </div>

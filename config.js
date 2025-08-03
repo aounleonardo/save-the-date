@@ -90,13 +90,19 @@ const GAME_CONFIG = {
             power: 10, 
             message: '💝 Groom used Compliment! Bride is charmed!',
             emoji: '💝'
+        },
+        argument: { 
+            name: 'Start an argument', 
+            power: 0, 
+            message: '🧠 Groom used Start an argument! It\'s not effective at all...',
+            emoji: '🧠'
         }
     },
     
     // Game settings
     settings: {
-        proximityDistance: 60, // How close to start battle
-        interactionDistance: 80, // How close to interact with altar
+        // proximityDistance: 60, // How close to start battle
+        proximityDistance: 10000, // How close to start battle
         messageDuration: 3000   // How long messages show (ms)
     },
     

@@ -312,6 +312,7 @@ class GameScene extends Phaser.Scene {
         document.getElementById('flirtBtn').addEventListener('click', () => this.useMove('flirt'));
         document.getElementById('kissBtn').addEventListener('click', () => this.useMove('kiss'));
         document.getElementById('complimentBtn').addEventListener('click', () => this.useMove('compliment'));
+        document.getElementById('argumentBtn').addEventListener('click', () => this.useArgument());
         document.getElementById('pokeballBtn').addEventListener('click', () => this.usePokeball());
         document.getElementById('runBtn').addEventListener('click', () => this.runFromBattle());
     }
@@ -559,10 +560,16 @@ class GameScene extends Phaser.Scene {
         // Reset battle stats
         this.groomHP = this.groomMaxHP;
         this.brideHP = this.brideMaxHP;
+        this.argumentUsed = false; // Reset argument usage
         this.updateHealthBars();
         
         // Disable pokeball initially
         document.getElementById('pokeballBtn').disabled = true;
+        
+        // Reset argument button
+        const argumentBtn = document.getElementById('argumentBtn');
+        argumentBtn.disabled = false;
+        argumentBtn.style.opacity = '1';
         
         this.updateBattleMessage('A wild Bride appeared! 💕');
     }
@@ -673,6 +680,35 @@ class GameScene extends Phaser.Scene {
             this.throwPokeball();
         } else {
             this.updateBattleMessage('💔 Ghinwa is not charmed enough yet! Try using more moves!');
+        }
+    }
+
+    useArgument() {
+        // Check if argument has been used before
+        if (this.argumentUsed) {
+            this.updateBattleMessage('🤦 Haven\'t you learned from your mistake? Maybe you\'re not ready to get married...');
+            // Disable the button permanently
+            const button = document.getElementById('argumentBtn');
+            button.disabled = true;
+            button.style.opacity = '0.5';
+            return;
+        }
+        
+        // Mark argument as used (first time)
+        this.argumentUsed = true;
+        
+        // Argument move damages the groom instead of the bride!
+        const damage = 10;
+        this.groomHP = Math.max(0, this.groomHP - damage);
+        this.updateHealthBars();
+        this.updateBattleMessage('🧠 Leonardo started an argument! It backfired! Leonardo took ' + damage + ' damage!');
+        
+        // Check if groom fainted
+        if (this.groomHP <= 0) {
+            this.groomHP = 0;
+            this.updateHealthBars();
+            this.updateBattleMessage('💔 Leonardo fainted from arguing too much!');
+            // Could add game over logic here if needed
         }
     }
 
