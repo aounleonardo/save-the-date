@@ -464,24 +464,109 @@ class GameScene extends Phaser.Scene {
         });
     }
 
-    startBattle() {
+        startBattle() {
         this.gameState = 'battling';
-        this.battleOverlay.classList.remove('hidden');
-
-        // Stop the groom's movement and animation
+        
+        // Stop the groom's movement and animation immediately
         this.groom.setVelocity(0, 0);
         this.groom.stop();
         this.groom.setFrame(0); // Show static frame
-
+        
+        // Create battle transition overlay
+        this.createBattleTransition();
+    }
+    
+    createBattleTransition() {
+        // Create a black overlay that covers the entire screen
+        // Use screen coordinates instead of world coordinates
+        const screenWidth = this.cameras.main.width;
+        const screenHeight = this.cameras.main.height;
+        
+        this.battleTransition = this.add.rectangle(
+            screenWidth / 2,
+            screenHeight / 2,
+            screenWidth,
+            screenHeight,
+            0x000000
+        );
+        this.battleTransition.setDepth(1000); // Very high depth to be on top
+        this.battleTransition.setAlpha(0);
+        
+        // Make it follow the camera so it stays in screen position
+        this.battleTransition.setScrollFactor(0);
+        
+        // Fade in the transition
+        this.tweens.add({
+            targets: this.battleTransition,
+            alpha: 1,
+            duration: 500,
+            onComplete: () => {
+                // After fade in, show battle UI and fade out
+                this.showBattleUI();
+                this.tweens.add({
+                    targets: this.battleTransition,
+                    alpha: 0,
+                    duration: 500,
+                    onComplete: () => {
+                        this.battleTransition.destroy();
+                    }
+                });
+            }
+        });
+    }
+    
+    showBattleUI() {
+        // Show the battle overlay
+        this.battleOverlay.classList.remove('hidden');
+        
         // Reset battle stats
         this.groomHP = this.groomMaxHP;
         this.brideHP = this.brideMaxHP;
         this.updateHealthBars();
-
+        
         // Disable pokeball initially
         document.getElementById('pokeballBtn').disabled = true;
-
+        
         this.updateBattleMessage('A wild Bride appeared! 💕');
+    }
+    
+    createExitTransition(callback) {
+        // Create a black overlay that covers the entire screen
+        // Use screen coordinates instead of world coordinates
+        const screenWidth = this.cameras.main.width;
+        const screenHeight = this.cameras.main.height;
+        
+        this.exitTransition = this.add.rectangle(
+            screenWidth / 2,
+            screenHeight / 2,
+            screenWidth,
+            screenHeight,
+            0x000000
+        );
+        this.exitTransition.setDepth(1000); // Very high depth to be on top
+        this.exitTransition.setAlpha(0);
+        
+        // Make it follow the camera so it stays in screen position
+        this.exitTransition.setScrollFactor(0);
+        
+        // Fade in the transition
+        this.tweens.add({
+            targets: this.exitTransition,
+            alpha: 1,
+            duration: 300,
+            onComplete: () => {
+                // After fade in, execute callback and fade out
+                callback();
+                this.tweens.add({
+                    targets: this.exitTransition,
+                    alpha: 0,
+                    duration: 300,
+                    onComplete: () => {
+                        this.exitTransition.destroy();
+                    }
+                });
+            }
+        });
     }
 
     updateHealthBars() {
@@ -596,44 +681,54 @@ class GameScene extends Phaser.Scene {
         }, 3500);
     }
 
-    captureBride() {
+        captureBride() {
         this.bride.captured = true;
         this.gameState = 'captured';
-        this.battleOverlay.classList.add('hidden');
-
-        // Ensure groom is stopped and reset animation state
-        this.groom.setVelocity(0, 0);
-        this.groom.stop();
-        this.groom.setFrame(0);
-        this.groom.isMoving = false;
-
-        this.showMessage(this.weddingDetails.capturedMessage);
-
-        this.bride.setVisible(false);
-
-        setTimeout(() => {
-            this.showMessage(this.weddingDetails.title + '\n' + this.weddingDetails.message);
-        }, 3000);
+        
+        // Create exit transition
+        this.createExitTransition(() => {
+            // After transition, hide battle UI and show capture message
+            this.battleOverlay.classList.add('hidden');
+            
+            // Ensure groom is stopped and reset animation state
+            this.groom.setVelocity(0, 0);
+            this.groom.stop();
+            this.groom.setFrame(0);
+            this.groom.isMoving = false;
+            
+            this.showMessage(this.weddingDetails.capturedMessage);
+            
+            this.bride.setVisible(false);
+            
+            setTimeout(() => {
+                this.showMessage(this.weddingDetails.title + '\n' + this.weddingDetails.message);
+            }, 3000);
+        });
     }
 
-    runFromBattle() {
+        runFromBattle() {
         this.gameState = 'exploring';
-        this.battleOverlay.classList.add('hidden');
-
-        // Move groom away from bride to prevent immediate re-trigger
-        const angle = Phaser.Math.Angle.Between(this.bride.x, this.bride.y, this.groom.x, this.groom.y);
-        const distance = 100; // Move 100 pixels away
-        this.groom.x = this.bride.x + Math.cos(angle) * distance;
-        this.groom.y = this.bride.y + Math.sin(angle) * distance;
-
-        // Keep groom in world bounds
-        this.groom.x = Math.max(this.groom.width / 2, Math.min(this.worldWidth - this.groom.width / 2, this.groom.x));
-        this.groom.y = Math.max(this.groom.height / 2, Math.min(this.worldHeight - this.groom.height / 2, this.groom.y));
-
-        // Stop movement
-        this.groom.setVelocity(0, 0);
-
-        this.showMessage('🏃 You ran away from the battle...');
+        
+        // Create exit transition
+        this.createExitTransition(() => {
+            // After transition, hide battle UI and move groom
+            this.battleOverlay.classList.add('hidden');
+            
+            // Move groom away from bride to prevent immediate re-trigger
+            const angle = Phaser.Math.Angle.Between(this.bride.x, this.bride.y, this.groom.x, this.groom.y);
+            const distance = 100; // Move 100 pixels away
+            this.groom.x = this.bride.x + Math.cos(angle) * distance;
+            this.groom.y = this.bride.y + Math.sin(angle) * distance;
+            
+            // Keep groom in world bounds
+            this.groom.x = Math.max(this.groom.width / 2, Math.min(this.worldWidth - this.groom.width / 2, this.groom.x));
+            this.groom.y = Math.max(this.groom.height / 2, Math.min(this.worldHeight - this.groom.height / 2, this.groom.y));
+            
+            // Stop movement
+            this.groom.setVelocity(0, 0);
+            
+            this.showMessage('🏃 You ran away from the battle...');
+        });
     }
 
     showMessage(message) {
