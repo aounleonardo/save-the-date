@@ -101,6 +101,8 @@ class GameScene extends Phaser.Scene {
         
         // Setup camera to follow the player
         this.setupCamera();
+
+        this.showMessage('I need to find Ghinwa 👰🏽‍♀️...');
     }
 
     createWorldBackground() {
@@ -173,8 +175,6 @@ class GameScene extends Phaser.Scene {
         );
         this.ceremonyArea.setAlpha(0);
         this.ceremonyArea.setDepth(1);
-        
-        // No label needed since it's invisible
     }
     
     setupGroomAnimation() {
@@ -354,6 +354,7 @@ class GameScene extends Phaser.Scene {
         if (this.gameState === 'exploring') {
             this.handleMovement();
             this.checkProximityToBride();
+            this.checkCeremonyArea();
             this.updateCoordinateDisplay();
         }
     }
@@ -412,11 +413,6 @@ class GameScene extends Phaser.Scene {
         
         // Handle groom animation based on movement
         this.handleGroomAnimation();
-        
-        // Check for interaction
-        if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
-            this.checkInteraction();
-        }
     }
     
     handleGroomAnimation() {
@@ -484,11 +480,10 @@ class GameScene extends Phaser.Scene {
         }
     }
 
-    checkInteraction() {
+    checkCeremonyArea() {
         const ceremonyConfig = GAME_CONFIG.venue.ceremonyArea;
         
         // Check if groom is inside the ceremony area bounds
-        // These coordinates are now in world space
         const groomX = this.groom.x;
         const groomY = this.groom.y;
         const areaLeft = ceremonyConfig.x;
@@ -496,9 +491,16 @@ class GameScene extends Phaser.Scene {
         const areaTop = ceremonyConfig.y;
         const areaBottom = ceremonyConfig.y + ceremonyConfig.height;
         
-        if (groomX >= areaLeft && groomX <= areaRight && 
-            groomY >= areaTop && groomY <= areaBottom) {
-            this.showMessage('💒 You approach the altar... the perfect place for your special moment!');
+        const isInCeremonyArea = groomX >= areaLeft && groomX <= areaRight && 
+                                groomY >= areaTop && groomY <= areaBottom;
+        
+        // Show message only when entering the area (not continuously)
+        if (isInCeremonyArea && !this.inCeremonyArea) {
+            this.inCeremonyArea = true;
+            this.showMessage('💒 You approach the altar...\nthe perfect place for your special moment!');
+        } else if (!isInCeremonyArea && this.inCeremonyArea) {
+            // Reset flag when leaving the area
+            this.inCeremonyArea = false;
         }
     }
 
@@ -675,11 +677,37 @@ class GameScene extends Phaser.Scene {
     }
 
     showMessage(message) {
-        this.messageBox.textContent = message;
-        this.messageBox.classList.remove('hidden');
-        setTimeout(() => {
-            this.messageBox.classList.add('hidden');
-        }, this.settings.messageDuration);
+        const messageText = this.add.text(this.groom.x, this.groom.y - 80, message, {
+            fontSize: '16px',
+            fill: '#ffffff',
+            stroke: '#000000',
+            strokeThickness: 3,
+            backgroundColor: '#000000',
+            padding: { x: 10, y: 5 }
+        });
+        messageText.setOrigin(0.5);
+        messageText.setDepth(10); // Always on top
+        
+        // Animate the message (fade in, stay, fade out)
+        messageText.setAlpha(0);
+        this.tweens.add({
+            targets: messageText,
+            alpha: 1,
+            duration: 500,
+            onComplete: () => {
+                // After fade in, wait then fade out
+                this.time.delayedCall(this.settings.messageDuration, () => {
+                    this.tweens.add({
+                        targets: messageText,
+                        alpha: 0,
+                        duration: 500,
+                        onComplete: () => {
+                            messageText.destroy();
+                        }
+                    });
+                });
+            }
+        });
     }
 }
 
