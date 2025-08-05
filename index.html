@@ -231,8 +231,8 @@
             border-color: #FFD700;
         }
 
-        .move-pokeball {
-            border-color: #FF0000;
+        .move-pokering {
+            border-color: #FFD700;
         }
 
         .move-run {
@@ -271,36 +271,28 @@
             display: none;
         }
 
-        /* Pokéball throwing animation */
-        .pokeball {
+        /* Pokering throwing animation */
+        .pokering {
             position: absolute;
-            width: 30px;
-            height: 30px;
-            background: linear-gradient(45deg, #FF0000 0%, #FF0000 45%, #FFFFFF 45%, #FFFFFF 55%, #FF0000 55%, #FF0000 100%);
-            border: 2px solid #000;
-            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             z-index: 1500;
             display: none;
         }
 
-        .pokeball::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 8px;
-            height: 8px;
-            background: #FFFFFF;
-            border: 2px solid #000;
-            border-radius: 50%;
+        .pokering::before {
+            content: '💍';
         }
 
-        .pokeball-throw {
-            animation: throwPokeball 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        .pokering-throw {
+            animation: throwPokering 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
         }
 
-        @keyframes throwPokeball {
+        @keyframes throwPokering {
             0% {
                 transform: translate(0, 0) rotate(0deg);
                 opacity: 1;
@@ -312,11 +304,11 @@
             }
         }
 
-        .pokeball-wiggle {
-            animation: pokeballWiggle 2s ease-in-out forwards;
+        .pokering-wiggle {
+            animation: pokeringWiggle 2s ease-in-out forwards;
         }
 
-        @keyframes pokeballWiggle {
+        @keyframes pokeringWiggle {
             0% {
                 transform: translate(520px, -100px) rotate(0deg);
                 opacity: 1;
@@ -399,8 +391,8 @@
                     <img src="assets/images/battle_bride.png" alt="Bride" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
                 </div>
 
-                <!-- Pokéball for throwing animation -->
-                <div class="pokeball" id="pokeball"></div>
+                <!-- Pokering for throwing animation -->
+                <div class="pokering" id="pokering"></div>
 
                 <!-- Health bars -->
                 <div class="health-bar-container groom-health">
@@ -423,7 +415,7 @@
                     <button id="kissBtn" class="move-kiss">😘 Kiss</button>
                     <button id="complimentBtn" class="move-compliment">💝 Compliment</button>
                     <button id="argumentBtn" class="move-argument">🧠 Start an argument</button>
-                    <button id="pokeballBtn" class="move-pokeball">🎾 Throw Pokeball</button>
+                    <button id="pokeringBtn" class="move-pokering">💍 Throw Pokering</button>
                     <button id="runBtn" class="move-run">🏃 Run</button>
                 </div>
             </div>

@@ -405,24 +405,24 @@ class GameScene extends Phaser.Scene {
         document.getElementById('kissBtn').addEventListener('click', () => this.useMove('kiss'));
         document.getElementById('complimentBtn').addEventListener('click', () => this.useMove('compliment'));
         document.getElementById('argumentBtn').addEventListener('click', () => this.useArgument());
-        document.getElementById('pokeballBtn').addEventListener('click', () => this.usePokeball());
+        document.getElementById('pokeringBtn').addEventListener('click', () => this.usePokering());
         
-        // Setup instant tooltip for pokeball button
-        const pokeballBtn = document.getElementById('pokeballBtn');
+        // Setup instant tooltip for pokering button
+        const pokeringBtn = document.getElementById('pokeringBtn');
         const tooltip = document.getElementById('customTooltip');
         
-        pokeballBtn.addEventListener('mouseenter', (e) => {
-            if (pokeballBtn.disabled) {
-                tooltip.textContent = 'You need to charm the bride first before you can throw the Pokeball!';
+        pokeringBtn.addEventListener('mouseenter', (e) => {
+            if (pokeringBtn.disabled) {
+                tooltip.textContent = 'You need to charm the bride first before you can throw the Pokering!';
                 tooltip.classList.remove('hidden');
                 
-                const rect = pokeballBtn.getBoundingClientRect();
+                const rect = pokeringBtn.getBoundingClientRect();
                 tooltip.style.left = rect.left + (rect.width / 2) + 'px';
                 tooltip.style.top = (rect.top - 10) + 'px';
             }
         });
         
-        pokeballBtn.addEventListener('mouseleave', () => {
+        pokeringBtn.addEventListener('mouseleave', () => {
             tooltip.classList.add('hidden');
         });
         document.getElementById('runBtn').addEventListener('click', () => this.runFromBattle());
@@ -444,8 +444,8 @@ class GameScene extends Phaser.Scene {
         this.brideHP = 65;
         this.brideMaxHP = 65;
 
-        // Disable pokeball initially
-        document.getElementById('pokeballBtn').disabled = true;
+        // Disable pokering initially
+        document.getElementById('pokeringBtn').disabled = true;
     }
 
     update() {
@@ -678,8 +678,8 @@ class GameScene extends Phaser.Scene {
         this.argumentUsed = false; // Reset argument usage
         this.updateHealthBars();
         
-        // Disable pokeball initially
-        document.getElementById('pokeballBtn').disabled = true;
+        // Disable pokering initially
+        document.getElementById('pokeringBtn').disabled = true;
         
         // Reset argument button
         const argumentBtn = document.getElementById('argumentBtn');
@@ -784,8 +784,8 @@ class GameScene extends Phaser.Scene {
         if (this.brideHP <= 0) {
             this.brideHP = 0;
             this.updateHealthBars();
-            this.updateBattleMessage('💕 Ghinwa is charmed! Now is your chance to use the Pokeball!');
-            document.getElementById('pokeballBtn').disabled = false;
+            this.updateBattleMessage('💕 Ghinwa is charmed! Now is your chance to use the Pokering!');
+            document.getElementById('pokeringBtn').disabled = false;
         } else {
             // Bride counter-attack
             setTimeout(() => {
@@ -797,9 +797,9 @@ class GameScene extends Phaser.Scene {
         }
     }
 
-    usePokeball() {
+    usePokering() {
         if (this.brideHP <= 0) {
-            this.throwPokeball();
+            this.throwPokering();
         } else {
             this.updateBattleMessage('💔 Ghinwa is not charmed enough yet! Try using more moves!');
         }
@@ -834,36 +834,36 @@ class GameScene extends Phaser.Scene {
         }
     }
 
-    throwPokeball() {
-        const pokeball = document.getElementById('pokeball');
+    throwPokering() {
+        const pokering = document.getElementById('pokering');
         const brideSprite = document.querySelector('.bride-sprite');
 
-        // Position pokeball near the groom (Leonardo)
-        pokeball.style.left = '140px';
-        pokeball.style.bottom = '140px';
-        pokeball.style.display = 'block';
+        // Position pokering near the groom (Leonardo)
+        pokering.style.left = '140px';
+        pokering.style.bottom = '140px';
+        pokering.style.display = 'block';
 
         // Start the throwing animation
         setTimeout(() => {
-            pokeball.classList.add('pokeball-throw');
-            this.updateBattleMessage('Leonardo threw a Pokéball!');
+            pokering.classList.add('pokering-throw');
+            this.updateBattleMessage('Leonardo threw a Pokering!');
         }, 100);
 
-        // After pokeball reaches the bride, start wiggling
+        // After pokering reaches the bride, start wiggling
         setTimeout(() => {
-            pokeball.classList.remove('pokeball-throw');
-            pokeball.classList.add('pokeball-wiggle');
-            this.updateBattleMessage('The Pokéball is wiggling...');
+            pokering.classList.remove('pokering-throw');
+            pokering.classList.add('pokering-wiggle');
+            this.updateBattleMessage('The Pokering is wiggling...');
         }, 1500);
 
         // After wiggling, show capture sequence
         setTimeout(() => {
-            pokeball.style.display = 'none';
-            pokeball.classList.remove('pokeball-wiggle');
+            pokering.style.display = 'none';
+            pokering.classList.remove('pokering-wiggle');
 
             // Add capture success animation to bride sprite
             brideSprite.classList.add('capture-success');
-            this.updateBattleMessage('🎉 Gotcha! Ghinwa was caught! 💕');
+            this.updateBattleMessage('💍 Gotcha! Ghinwa was caught! 💕');
 
             // Complete the capture after animation
             setTimeout(() => {
