@@ -54,27 +54,13 @@
             flex-direction: column;
         }
 
-        /* Battle background with grass */
+        /* Battle background with image */
         .battle-background {
             flex: 1;
-            background: linear-gradient(to bottom, #87CEEB 0%, #90EE90 50%, #228B22 100%);
+            background: url('assets/images/battle_background.jpg') center center;
+            background-size: cover;
             position: relative;
             overflow: hidden;
-        }
-
-        /* Grass pattern */
-        .battle-background::before {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 40%;
-            background: repeating-linear-gradient(45deg,
-                    transparent,
-                    transparent 10px,
-                    rgba(34, 139, 34, 0.1) 10px,
-                    rgba(34, 139, 34, 0.1) 20px);
         }
 
         /* Character sprites */

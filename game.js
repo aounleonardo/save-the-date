@@ -58,6 +58,8 @@ class BootScene extends Phaser.Scene {
         this.load.image('bride', 'assets/images/bride.png?v=' + Date.now());
         // Load battle bride image
         this.load.image('battle-bride', 'assets/images/battle_bride.png?v=' + Date.now());
+        // Load battle background
+        this.load.image('battle-background', 'assets/images/battle_background.jpg?v=' + Date.now());
 
         // Load audio files
         this.load.audio('map-music', 'assets/audios/go_solo.mp3');
@@ -893,6 +895,7 @@ class GameScene extends Phaser.Scene {
         this.createExitTransition(() => {
             // After transition, hide battle UI
             this.battleOverlay.classList.add('hidden');
+            
             this.showMessage('🏃 You ran away from the battle...');
         });
     }
