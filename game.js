@@ -58,6 +58,10 @@ class BootScene extends Phaser.Scene {
         this.load.image('bride', 'assets/images/bride.png?v=' + Date.now());
         // Load battle bride image
         this.load.image('battle-bride', 'assets/images/battle_bride.png?v=' + Date.now());
+
+        // Load audio files
+        this.load.audio('map-music', 'assets/audios/go_solo.mp3');
+        this.load.audio('battle-music', 'assets/audios/bala_wala_chi.mp3');
     }
 
     create() {
@@ -75,6 +79,10 @@ class GameScene extends Phaser.Scene {
         // World dimensions - much larger than the visible canvas
         this.worldWidth = 2400;  // 3x the canvas width
         this.worldHeight = 1800; // 3x the canvas height
+        
+        // Audio management
+        this.mapMusic = null;
+        this.battleMusic = null;
     }
 
     create() {
@@ -106,6 +114,51 @@ class GameScene extends Phaser.Scene {
         this.setupCamera();
 
         this.showMessage('I need to find Ghinwa 👰🏽‍♀️...');
+        
+        // Initialize audio
+        this.initializeAudio();
+    }
+    
+    initializeAudio() {
+        // Create audio instances
+        this.mapMusic = this.sound.add('map-music', {
+            loop: true,
+            volume: 0.5
+        });
+        
+        this.battleMusic = this.sound.add('battle-music', {
+            loop: true,
+            volume: 0.5
+        });
+        
+        // Start map music with offset
+        this.startMapMusic();
+    }
+    
+    startMapMusic() {
+        if (this.mapMusic && !this.mapMusic.isPlaying) {
+            // Start at 44 seconds (0:44)
+            this.mapMusic.play('', { start: 44 });
+        }
+    }
+    
+    stopMapMusic() {
+        if (this.mapMusic && this.mapMusic.isPlaying) {
+            this.mapMusic.stop();
+        }
+    }
+    
+    startBattleMusic() {
+        if (this.battleMusic && !this.battleMusic.isPlaying) {
+            // Start at 15 seconds (0:15)
+            this.battleMusic.play('', { start: 15 });
+        }
+    }
+    
+    stopBattleMusic() {
+        if (this.battleMusic && this.battleMusic.isPlaying) {
+            this.battleMusic.stop();
+        }
     }
 
     createWorldBackground() {
@@ -498,6 +551,10 @@ class GameScene extends Phaser.Scene {
         this.groom.stop();
         this.groom.setFrame(0); // Show static frame
         
+        // Switch to battle music
+        this.stopMapMusic();
+        this.startBattleMusic();
+        
         // Create battle transition overlay
         this.createBattleTransition();
     }
@@ -781,6 +838,10 @@ class GameScene extends Phaser.Scene {
         this.bride.captured = true;
         this.gameState = 'captured';
         
+        // Switch back to map music
+        this.stopBattleMusic();
+        this.startMapMusic();
+        
         // Create exit transition
         this.createExitTransition(() => {
             // After transition, hide battle UI and show capture message
@@ -804,6 +865,10 @@ class GameScene extends Phaser.Scene {
 
         runFromBattle() {
         this.gameState = 'exploring';
+        
+        // Switch back to map music
+        this.stopBattleMusic();
+        this.startMapMusic();
         
         // Move groom away immediately to prevent re-trigger
         const angle = Phaser.Math.Angle.Between(this.bride.x, this.bride.y, this.groom.x, this.groom.y);
