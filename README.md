@@ -97,8 +97,7 @@ wedding-save-the-date/
    ```
 
 2. **Open in browser:**
-   - Double-click `index.html` or
-   - Use a local server: `python -m http.server 8000`
+   - Use a local server: `python3 -m http.server 8000`
 
 ## 🌟 Features
 

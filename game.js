@@ -2,11 +2,35 @@
 
 class WeddingGame extends Phaser.Game {
     constructor() {
+        // Detect if we're on mobile - more comprehensive detection
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                        ('ontouchstart' in window) ||
+                        (navigator.maxTouchPoints > 0) ||
+                        window.innerWidth <= 768;
+        
+        // Calculate responsive canvas size
+        // Use 4:3 aspect ratio but maximize based on available space
+        const containerWidth = window.innerWidth - 10;
+        const containerHeight = window.innerHeight * 0.5; // Reserve space for D-pad on mobile
+        
+        // Calculate dimensions maintaining 4:3 aspect ratio
+        let canvasWidth, canvasHeight;
+        
+        if (isMobile) {
+            // On mobile, fit to container width but cap at 800
+            canvasWidth = Math.min(800, containerWidth);
+            canvasHeight = Math.floor(canvasWidth * 0.75); // 4:3 ratio
+        } else {
+            // Desktop: use fixed size
+            canvasWidth = 800;
+            canvasHeight = 600;
+        }
+        
         const config = {
             type: Phaser.AUTO,
             parent: 'gameContainer',
-            width: 800,
-            height: 600,
+            width: canvasWidth,
+            height: canvasHeight,
             backgroundColor: '#000000',
             physics: {
                 default: 'arcade',
@@ -15,10 +39,19 @@ class WeddingGame extends Phaser.Game {
                     debug: false
                 }
             },
-            scene: [BootScene, GameScene, BattleScene]
+            scene: [BootScene, GameScene, BattleScene],
+            scale: {
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH
+            }
         };
         super(config);
+        
+        // Store mobile detection for use in scenes
+        this.isMobile = isMobile;
     }
+    
+
 }
 
 class BootScene extends Phaser.Scene {
@@ -174,6 +207,14 @@ class GameScene extends Phaser.Scene {
         // Audio management
         this.mapMusic = null;
         this.battleMusic = null;
+        
+        // Mobile input state
+        this.mobileInput = {
+            up: false,
+            down: false,
+            left: false,
+            right: false
+        };
     }
 
     create() {
@@ -206,6 +247,16 @@ class GameScene extends Phaser.Scene {
         
         // Initialize audio
         this.initializeAudio();
+        
+        // Setup mobile controls if on mobile or small screen
+        if (this.game.isMobile || window.innerWidth <= 768) {
+            this.setupMobileControls();
+            // Update controls text for mobile
+            const controlsText = document.getElementById('controlsText');
+            if (controlsText) {
+                controlsText.textContent = 'Use the D-pad to move';
+            }
+        }
         
         // Start the opening sequence
         this.startOpeningSequence();
@@ -480,6 +531,72 @@ class GameScene extends Phaser.Scene {
         });
         this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     }
+    
+    setupMobileControls() {
+        const mobileControls = document.getElementById('mobileControls');
+        if (mobileControls) {
+            mobileControls.style.display = 'block';
+        }
+        
+        // Add touch event listeners for D-pad
+        const dpadButtons = document.querySelectorAll('.dpad-btn');
+        dpadButtons.forEach(button => {
+            const direction = button.getAttribute('data-direction');
+            
+            // Touch start
+            button.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this.handleMobileInput(direction, true);
+            });
+            
+            // Touch end
+            button.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                this.handleMobileInput(direction, false);
+            });
+            
+            // Mouse events for testing on desktop
+            button.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                this.handleMobileInput(direction, true);
+            });
+            
+            button.addEventListener('mouseup', (e) => {
+                e.preventDefault();
+                this.handleMobileInput(direction, false);
+            });
+            
+            // Mouse leave to stop movement
+            button.addEventListener('mouseleave', (e) => {
+                e.preventDefault();
+                this.handleMobileInput(direction, false);
+            });
+        });
+    }
+    
+    handleMobileInput(direction, isPressed) {
+        switch (direction) {
+            case 'up':
+                this.mobileInput.up = isPressed;
+                break;
+            case 'down':
+                this.mobileInput.down = isPressed;
+                break;
+            case 'left':
+                this.mobileInput.left = isPressed;
+                break;
+            case 'right':
+                this.mobileInput.right = isPressed;
+                break;
+            case 'stop':
+                // Stop all movement
+                this.mobileInput.up = false;
+                this.mobileInput.down = false;
+                this.mobileInput.left = false;
+                this.mobileInput.right = false;
+                break;
+        }
+    }
 
     setupUI() {
         this.battleOverlay = document.getElementById('battleOverlay');
@@ -549,11 +666,11 @@ class GameScene extends Phaser.Scene {
         const speed = GAME_CONFIG.characters.groom.speed;
         this.groom.setVelocity(0);
 
-        // Get input states
-        const leftPressed = this.cursors.left.isDown || this.wasd.A.isDown;
-        const rightPressed = this.cursors.right.isDown || this.wasd.D.isDown;
-        const upPressed = this.cursors.up.isDown || this.wasd.W.isDown;
-        const downPressed = this.cursors.down.isDown || this.wasd.S.isDown;
+        // Get input states - include mobile input
+        const leftPressed = this.cursors.left.isDown || this.wasd.A.isDown || this.mobileInput.left;
+        const rightPressed = this.cursors.right.isDown || this.wasd.D.isDown || this.mobileInput.right;
+        const upPressed = this.cursors.up.isDown || this.wasd.W.isDown || this.mobileInput.up;
+        const downPressed = this.cursors.down.isDown || this.wasd.S.isDown || this.mobileInput.down;
 
         // Prioritize one direction at a time (like Pokémon)
         // Priority: Up > Down > Left > Right
@@ -1091,7 +1208,37 @@ class BattleScene extends Phaser.Scene {
     }
 }
 
-// Initialize the game
+// Initialize the game after user interaction (required for mobile audio)
 window.addEventListener('load', () => {
-    new WeddingGame();
+    const tapToStart = document.getElementById('tapToStart');
+    const loadingScreen = document.getElementById('loadingScreen');
+    
+    if (tapToStart) {
+        // Wait for user tap before starting (unlocks audio on mobile)
+        const startGame = () => {
+            // Remove tap listener
+            tapToStart.removeEventListener('click', startGame);
+            tapToStart.removeEventListener('touchstart', startGame);
+            
+            // Fade out tap screen
+            tapToStart.style.transition = 'opacity 0.3s ease';
+            tapToStart.style.opacity = '0';
+            
+            setTimeout(() => {
+                tapToStart.style.display = 'none';
+                // Show loading screen
+                if (loadingScreen) {
+                    loadingScreen.classList.remove('hidden');
+                }
+                // Start the game
+                new WeddingGame();
+            }, 300);
+        };
+        
+        tapToStart.addEventListener('click', startGame);
+        tapToStart.addEventListener('touchstart', startGame, { passive: true });
+    } else {
+        // Fallback: start game directly
+        new WeddingGame();
+    }
 }); 

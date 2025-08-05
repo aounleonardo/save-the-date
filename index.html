@@ -3,26 +3,34 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
     <title>Wedding Save The Date - Pokemon Style!</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💍</text></svg>">
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 10px;
             background: linear-gradient(135deg, #fd7b7b 0%, #b9e7f9 100%);
             font-family: 'Arial', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         h1 {
             color: white;
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: clamp(18px, 4vw, 24px);
         }
 
         #gameContainer {
@@ -30,12 +38,18 @@
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
             position: relative;
+            max-width: 100%;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 4/3;
+            overflow: hidden;
         }
 
         #controls {
-            margin-top: 20px;
+            margin-top: 10px;
             color: white;
             text-align: center;
+            font-size: 14px;
         }
 
         .hidden {
@@ -148,10 +162,8 @@
 
         /* Mobile D-pad */
         #mobileControls {
-            position: fixed;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
+            position: relative;
+            margin-top: 20px;
             z-index: 1000;
             display: none;
         }
@@ -160,28 +172,31 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             grid-template-rows: 1fr 1fr 1fr;
-            gap: 12px;
-            width: 240px;
-            height: 240px;
+            gap: 6px;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
         }
 
         .dpad-btn {
-            background: rgba(255, 255, 255, 0.8);
-            border: 2px solid #333;
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid #555;
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 36px;
+            font-size: 24px;
             cursor: pointer;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
             transition: all 0.1s ease;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.25);
         }
 
         .dpad-btn:active {
             background: rgba(255, 255, 255, 1);
-            transform: scale(0.95);
+            transform: scale(0.92);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
         }
 
         .dpad-btn.up {
@@ -207,55 +222,53 @@
         .dpad-btn.center {
             grid-column: 2;
             grid-row: 2;
-            background: rgba(255, 255, 255, 0.6);
-            font-size: 16px;
+            background: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
         }
 
-        /* Responsive design */
+        /* Responsive design - Show mobile controls on touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            #mobileControls {
+                display: block !important;
+            }
+            
+            #controls {
+                display: none;
+            }
+        }
+
+        /* Also show D-pad on small screens (for testing/emulation) */
         @media (max-width: 768px) {
             body {
                 padding: 5px;
+                justify-content: flex-start;
+            }
+
+            h1 {
+                margin-bottom: 5px;
+                font-size: clamp(16px, 5vw, 20px);
             }
 
             #gameContainer {
-                max-height: 50vh;
                 border-width: 2px;
+                flex-shrink: 0;
             }
 
-            .dpad {
-                width: 200px;
-                height: 200px;
+            #mobileControls {
+                display: block;
+            }
+            
+            #controls {
+                display: none;
             }
 
-            .dpad-btn {
-                font-size: 30px;
-            }
-
-            .loading-title {
-                font-size: 20px;
-            }
-
-            .loading-subtitle {
-                font-size: 14px;
-            }
-
-            .progress-container {
-                width: 250px;
-            }
-        }
-
-        @media (max-width: 480px) {
             .dpad {
                 width: 160px;
                 height: 160px;
             }
 
             .dpad-btn {
-                font-size: 26px;
-            }
-
-            #mobileControls {
-                bottom: 60px;
+                font-size: 24px;
             }
 
             .loading-title {
@@ -267,7 +280,103 @@
             }
 
             .progress-container {
-                width: 200px;
+                width: 220px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 3px;
+            }
+
+            h1 {
+                font-size: clamp(14px, 4.5vw, 18px);
+                margin-bottom: 3px;
+            }
+            
+            #gameContainer {
+                border-radius: 8px;
+            }
+
+            .dpad {
+                width: 140px;
+                height: 140px;
+                gap: 6px;
+            }
+
+            .dpad-btn {
+                font-size: 22px;
+                border-width: 2px;
+            }
+
+            #mobileControls {
+                margin-top: 15px;
+            }
+
+            .loading-title {
+                font-size: 16px;
+            }
+
+            .loading-subtitle {
+                font-size: 11px;
+            }
+
+            .progress-container {
+                width: 180px;
+            }
+            
+            /* Battle menu mobile adjustments */
+            #battleMenu {
+                padding: 6px;
+                min-height: 140px;
+            }
+            
+            .battle-message {
+                padding: 8px;
+                font-size: 12px;
+                min-height: 30px;
+            }
+            
+            .battle-actions {
+                gap: 4px;
+                padding-top: 6px;
+            }
+            
+            .battle-actions button {
+                padding: 5px 2px;
+                font-size: 10px;
+                min-height: 28px;
+            }
+        }
+        
+        /* Landscape mobile optimization */
+        @media (max-height: 500px) and (orientation: landscape) {
+            h1 {
+                display: none;
+            }
+            
+            body {
+                flex-direction: row;
+                justify-content: center;
+                gap: 20px;
+            }
+            
+            #controls {
+                display: none;
+            }
+            
+            #mobileControls {
+                margin-top: 0;
+                position: static;
+            }
+            
+            .dpad {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .dpad-btn {
+                font-size: 16px;
             }
         }
 
@@ -296,26 +405,26 @@
         /* Character sprites */
         .character-sprite {
             position: absolute;
-            width: 80px;
-            height: 80px;
+            width: clamp(50px, 12vw, 80px);
+            height: clamp(50px, 12vw, 80px);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 40px;
-            border: 3px solid #333;
+            font-size: clamp(24px, 6vw, 40px);
+            border: 2px solid #333;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
 
         .groom-sprite {
-            bottom: 120px;
-            left: 100px;
+            bottom: 15%;
+            left: 10%;
             background: linear-gradient(135deg, #2E86AB, #1B4F72);
         }
 
         .bride-sprite {
-            top: 80px;
-            right: 80px;
+            top: 15%;
+            right: 10%;
             background: linear-gradient(135deg, #FF69B4, #C71585);
         }
 
@@ -335,10 +444,10 @@
         }
 
         .groom-health {
-            bottom: 220px;
-            left: 100px;
-            width: 120px;
-            height: 15px;
+            bottom: calc(15% + clamp(55px, 13vw, 90px));
+            left: 10%;
+            width: clamp(80px, 20vw, 120px);
+            height: 12px;
         }
 
         .groom-health .health-bar-fill {
@@ -346,10 +455,10 @@
         }
 
         .bride-health {
-            top: 40px;
-            right: 80px;
-            width: 120px;
-            height: 15px;
+            top: calc(15% - 25px);
+            right: 10%;
+            width: clamp(80px, 20vw, 120px);
+            height: 12px;
         }
 
         .bride-health .health-bar-fill {
@@ -358,26 +467,27 @@
 
         .health-text {
             position: absolute;
-            font-size: 10px;
+            font-size: clamp(8px, 2vw, 10px);
             color: white;
             font-weight: bold;
             text-shadow: 1px 1px 1px #000;
+            white-space: nowrap;
         }
 
         .groom-health .health-text {
-            top: -20px;
+            top: -18px;
             left: 0;
         }
 
         .bride-health .health-text {
-            top: -20px;
+            top: -18px;
             left: 0;
         }
 
         /* Battle menu */
         #battleMenu {
-            padding: 10px;
-            height: 200px;
+            padding: 8px;
+            min-height: 160px;
             background: #f0f0f0;
             border-top: 3px solid #333;
             display: flex;
@@ -385,32 +495,31 @@
         }
 
         .battle-message {
-            flex: 1;
             background: #fff;
             border: 2px solid #333;
-            padding: 15px;
-            font-size: 14px;
+            padding: 10px;
+            font-size: 13px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
             border-radius: 5px;
+            min-height: 36px;
         }
 
         .battle-actions {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            padding-top: 10px;
-            height: 140px;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 5px;
+            padding-top: 8px;
         }
 
         .battle-actions button {
             background: linear-gradient(to bottom, #f8f8f8, #e0e0e0);
             border: 2px solid #2c2c2c;
             border-radius: 6px;
-            padding: 8px 4px;
-            font-size: 13px;
+            padding: 6px 2px;
+            font-size: 11px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.15s ease;
@@ -418,10 +527,12 @@
             text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8);
             position: relative;
             overflow: hidden;
-            min-height: 35px;
+            min-height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .battle-actions button:hover {
@@ -442,10 +553,6 @@
             transform: none;
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
         }
-
-
-
-
 
         /* Move buttons with colors */
         .move-flirt {
@@ -603,6 +710,74 @@
             text-align: center;
             z-index: 2000;
         }
+
+        /* Tap to Start Screen */
+        #tapToStart {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #fd7b7b 0%, #b9e7f9 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            border-radius: 10px;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tap-content {
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        .tap-title {
+            font-size: clamp(20px, 5vw, 28px);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .tap-emoji {
+            font-size: clamp(40px, 10vw, 60px);
+            margin-bottom: 15px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .tap-instruction {
+            font-size: clamp(14px, 3.5vw, 18px);
+            margin-bottom: 20px;
+            opacity: 0.95;
+        }
+
+        .tap-sound-reminder {
+            font-size: clamp(12px, 3vw, 14px);
+            opacity: 0.85;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+
+        .tap-sound-reminder .sound-icon {
+            font-size: clamp(16px, 4vw, 20px);
+        }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </head>
@@ -610,8 +785,21 @@
 <body>
     <h1>💒 Wedding Save The Date 💒</h1>
     <div id="gameContainer">
+        <!-- Tap to Start Screen -->
+        <div id="tapToStart">
+            <div class="tap-content">
+                <div class="tap-emoji">💒💍</div>
+                <div class="tap-title">Wedding Save The Date</div>
+                <div class="tap-instruction">Tap anywhere to start!</div>
+                <div class="tap-sound-reminder">
+                    <span class="sound-icon">🔊</span> For the best experience,<br>
+                    turn off silent mode on your phone
+                </div>
+            </div>
+        </div>
+
         <!-- Loading Screen -->
-        <div id="loadingScreen">
+        <div id="loadingScreen" class="hidden">
             <div class="loading-content">
                 <div class="loading-title">💒 Loading Wedding Game 💒</div>
                 <div class="loading-subtitle">Preparing your romantic adventure...</div>
@@ -669,8 +857,19 @@
         </div>
     </div>
 
+    <!-- Mobile D-pad -->
+    <div id="mobileControls">
+        <div class="dpad">
+            <div class="dpad-btn up" data-direction="up">⬆️</div>
+            <div class="dpad-btn left" data-direction="left">⬅️</div>
+            <div class="dpad-btn center" data-direction="stop">⏹️</div>
+            <div class="dpad-btn right" data-direction="right">➡️</div>
+            <div class="dpad-btn down" data-direction="down">⬇️</div>
+        </div>
+    </div>
+
     <div id="controls">
-        <p>Use WASD or Arrow Keys to move</p>
+        <p id="controlsText">Use WASD or Arrow Keys to move</p>
     </div>
 
     <div id="messageBox" class="hidden"></div>
