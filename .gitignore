@@ -1,4 +1,6 @@
 # Media files - ignore all media by default
+assets/audios/*
+!assets/audios/.gitkeep
 assets/images/*
 !assets/images/.gitkeep
 
