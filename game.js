@@ -686,7 +686,7 @@ class GameScene extends Phaser.Scene {
         argumentBtn.disabled = false;
         argumentBtn.style.opacity = '1';
         
-        this.updateBattleMessage('A wild Bride appeared! 💕');
+        this.updateBattleMessage('A wild Bride appeared! Help me charm her! 💕');
     }
     
     createExitTransition(callback) {

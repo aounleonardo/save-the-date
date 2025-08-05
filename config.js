@@ -88,11 +88,11 @@ const GAME_CONFIG = {
         compliment: { 
             name: 'Compliment', 
             power: 10, 
-            message: '💝 Groom used Compliment! Bride is charmed!',
+            message: '💝 Groom used Compliment! It seems to be working!',
             emoji: '💝'
         },
         argument: { 
-            name: 'Start an argument', 
+            name: 'Start an argument',
             power: 0, 
             message: '🧠 Groom used Start an argument! It\'s not effective at all...',
             emoji: '🧠'
@@ -107,17 +107,14 @@ const GAME_CONFIG = {
     
     // Wedding details - customize this for your save the date!
     weddingDetails: {
-        title: '💒 Save The Date! 💒',
+        title: '💍 Save The Date! 🤸🏽‍♀️🍃',
         message: [
-            "We're getting married!",
+            "We’re getting married",
+            "on July 18, 2026",
+            "in our beautiful Lebanon!",
             "",
-            "Please join us in our celebrations.",
-            "",
-            "Date: July 18, 2025",
-            "Venue: Villa Acra, Lebanon",
-            "Secular ceremony @ 5:00 PM",
-            "Party and dinner @ 6:00 PM",
-            "After party from 12:30 AM to 4:00 AM"
+            "We hope you will include us",
+            "in your summer travel plans."
         ].join('\n'),
         capturedMessage: '🎉 Congratulations! You captured the Bride! 💒💕'
     }
