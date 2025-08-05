@@ -114,11 +114,12 @@ class GameScene extends Phaser.Scene {
 
         // Setup camera to follow the player
         this.setupCamera();
-
-        this.showMessage('I need to find Ghinwa 👰🏽‍♀️...');
         
         // Initialize audio
         this.initializeAudio();
+        
+        // Start the opening sequence
+        this.startOpeningSequence();
     }
     
     initializeAudio() {
@@ -161,6 +162,42 @@ class GameScene extends Phaser.Scene {
         if (this.battleMusic && this.battleMusic.isPlaying) {
             this.battleMusic.stop();
         }
+    }
+    
+    startOpeningSequence() {
+        // Disable input during opening sequence
+        this.input.enabled = false;
+        
+        // Start map music
+        this.startMapMusic();
+        
+        // Calculate zoom level to fit entire world in canvas
+        const canvasWidth = this.cameras.main.width;
+        const canvasHeight = this.cameras.main.height;
+        const zoomX = canvasWidth / this.worldWidth;
+        const zoomY = canvasHeight / this.worldHeight;
+        const fitZoom = Math.min(zoomX, zoomY); // Use the smaller zoom to ensure everything fits
+        
+        // First, show the entire map by setting camera to world center with calculated zoom
+        this.cameras.main.setZoom(fitZoom);
+        this.cameras.main.centerOn(this.worldWidth / 2, this.worldHeight / 2);
+        this.cameras.main.stopFollow(); // Stop following the groom temporarily
+        
+        // Wait 2 seconds to let player see the whole map
+        this.time.delayedCall(2000, () => {
+            // Now zoom in to the groom with a smooth transition
+            this.cameras.main.pan(this.groom.x, this.groom.y, 2000, 'Power2');
+            this.cameras.main.zoomTo(1.5, 2000, 'Power2');
+            
+            // After zoom completes, start following the groom and show message
+            this.time.delayedCall(2000, () => {
+                this.cameras.main.startFollow(this.groom, true, 0.1, 0.1);
+                this.input.enabled = true; // Re-enable input
+                
+                // Show the groom's message
+                this.showMessage('I need to find Ghinwa 👰🏽‍♀️...');
+            });
+        });
     }
 
     createWorldBackground() {
