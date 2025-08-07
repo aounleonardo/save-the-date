@@ -27,6 +27,9 @@ class BootScene extends Phaser.Scene {
     }
 
     preload() {
+        // Set up loading progress tracking
+        this.setupLoadingProgress();
+        
         // Load background image
         this.load.image('background', 'assets/images/background.png');
 
@@ -66,7 +69,93 @@ class BootScene extends Phaser.Scene {
         this.load.audio('battle-music', 'assets/audios/bala_wala_chi.mp3');
     }
 
+    setupLoadingProgress() {
+        // Get progress bar elements
+        this.progressBar = document.getElementById('progressBar');
+        this.progressText = document.getElementById('progressText');
+        this.loadingTips = document.querySelector('.loading-tips');
+        this.loadingStatus = document.getElementById('loadingStatus');
+        
+        // Loading tips that change during loading
+        this.loadingTipsArray = [
+            "💡 Tip: Use WASD or arrow keys to move around",
+            "💡 Tip: Find the bride to start the battle!",
+            "💡 Tip: Use romantic moves to charm the bride",
+            "💡 Tip: Don't start arguments - they backfire!",
+            "💡 Tip: Throw the Pokering when she's charmed",
+            "💡 Tip: Explore different areas of the venue",
+            "💡 Tip: The ceremony area is where the magic happens!"
+        ];
+        
+        let tipIndex = 0;
+        
+        // Set up loading progress events
+        this.load.on('progress', (value) => {
+            const percentage = Math.round(value * 100);
+            if (this.progressBar) {
+                this.progressBar.style.width = percentage + '%';
+            }
+            if (this.progressText) {
+                this.progressText.textContent = percentage + '%';
+            }
+            
+            // Update loading status based on progress
+            if (this.loadingStatus) {
+                if (percentage < 20) {
+                    this.loadingStatus.textContent = 'Loading game assets...';
+                } else if (percentage < 40) {
+                    this.loadingStatus.textContent = 'Loading character sprites...';
+                } else if (percentage < 60) {
+                    this.loadingStatus.textContent = 'Loading audio files...';
+                } else if (percentage < 80) {
+                    this.loadingStatus.textContent = 'Preparing game world...';
+                } else if (percentage < 100) {
+                    this.loadingStatus.textContent = 'Almost ready...';
+                }
+            }
+            
+            // Change tip every 15% progress
+            if (percentage > 0 && percentage % 15 === 0 && this.loadingTips) {
+                tipIndex = Math.min(tipIndex + 1, this.loadingTipsArray.length - 1);
+                this.loadingTips.innerHTML = this.loadingTipsArray[tipIndex];
+            }
+        });
+        
+        this.load.on('complete', () => {
+            // Show final status and tip
+            if (this.loadingStatus) {
+                this.loadingStatus.textContent = 'Loading complete!';
+            }
+            if (this.loadingTips) {
+                this.loadingTips.innerHTML = "🎉 Loading complete! Get ready for romance! 💕";
+            }
+            
+            // Loading complete - hide loading screen after a short delay
+            setTimeout(() => {
+                this.hideLoadingScreen();
+            }, 500);
+        });
+        
+        // Fallback: hide loading screen after 10 seconds if loading events don't fire
+        setTimeout(() => {
+            this.hideLoadingScreen();
+        }, 10000);
+    }
+    
+    hideLoadingScreen() {
+        const loadingScreen = document.getElementById('loadingScreen');
+        if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            loadingScreen.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 300);
+        }
+    }
+
     create() {
+        // Ensure loading screen is hidden immediately
+        this.hideLoadingScreen();
         this.scene.start('GameScene');
     }
 }

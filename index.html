@@ -42,6 +42,235 @@
             display: none !important;
         }
 
+        /* Loading Screen */
+        #loadingScreen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #fd7b7b 0%, #b9e7f9 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            border-radius: 10px;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .loading-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .loading-subtitle {
+            font-size: 16px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .progress-container {
+            width: 300px;
+            max-width: 80%;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 3px;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            height: 20px;
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            border-radius: 8px;
+            width: 0%;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .progress-text {
+            font-size: 14px;
+            margin-top: 10px;
+            opacity: 0.8;
+        }
+
+        .loading-tips {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 20px;
+            max-width: 300px;
+            line-height: 1.4;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-status {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 10px;
+        }
+
+        /* Mobile D-pad */
+        #mobileControls {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: none;
+        }
+
+        .dpad {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: 1fr 1fr 1fr;
+            gap: 12px;
+            width: 240px;
+            height: 240px;
+        }
+
+        .dpad-btn {
+            background: rgba(255, 255, 255, 0.8);
+            border: 2px solid #333;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            cursor: pointer;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: all 0.1s ease;
+        }
+
+        .dpad-btn:active {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(0.95);
+        }
+
+        .dpad-btn.up {
+            grid-column: 2;
+            grid-row: 1;
+        }
+
+        .dpad-btn.down {
+            grid-column: 2;
+            grid-row: 3;
+        }
+
+        .dpad-btn.left {
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .dpad-btn.right {
+            grid-column: 3;
+            grid-row: 2;
+        }
+
+        .dpad-btn.center {
+            grid-column: 2;
+            grid-row: 2;
+            background: rgba(255, 255, 255, 0.6);
+            font-size: 16px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            body {
+                padding: 5px;
+            }
+
+            #gameContainer {
+                max-height: 50vh;
+                border-width: 2px;
+            }
+
+            .dpad {
+                width: 200px;
+                height: 200px;
+            }
+
+            .dpad-btn {
+                font-size: 30px;
+            }
+
+            .loading-title {
+                font-size: 20px;
+            }
+
+            .loading-subtitle {
+                font-size: 14px;
+            }
+
+            .progress-container {
+                width: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dpad {
+                width: 160px;
+                height: 160px;
+            }
+
+            .dpad-btn {
+                font-size: 26px;
+            }
+
+            #mobileControls {
+                bottom: 60px;
+            }
+
+            .loading-title {
+                font-size: 18px;
+            }
+
+            .loading-subtitle {
+                font-size: 12px;
+            }
+
+            .progress-container {
+                width: 200px;
+            }
+        }
+
         /* Pokémon-style battle interface */
         #battleOverlay {
             position: absolute;
@@ -381,6 +610,24 @@
 <body>
     <h1>💒 Wedding Save The Date 💒</h1>
     <div id="gameContainer">
+        <!-- Loading Screen -->
+        <div id="loadingScreen">
+            <div class="loading-content">
+                <div class="loading-title">💒 Loading Wedding Game 💒</div>
+                <div class="loading-subtitle">Preparing your romantic adventure...</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                <div class="progress-text" id="progressText">0%</div>
+                <div class="loading-spinner"></div>
+                <div class="loading-status" id="loadingStatus">Initializing...</div>
+                <div class="loading-tips">
+                    💡 Tip: Use WASD or arrow keys to move around<br>
+                    💡 Tip: Find the bride to start the battle!
+                </div>
+            </div>
+        </div>
+
         <div id="battleOverlay" class="hidden">
             <div class="battle-background">
                 <!-- Character sprites -->
