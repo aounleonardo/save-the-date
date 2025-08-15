@@ -882,7 +882,7 @@ class GameScene extends Phaser.Scene {
                 this.groomHP = Math.max(0, this.groomHP - counterDamage);
                 this.updateHealthBars();
                 this.updateBattleMessage(`Ghinwa blushes! Leonardo took ${counterDamage} damage! 💕`);
-            }, 1000);
+            }, 2000);
         }
     }
 
