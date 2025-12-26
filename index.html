@@ -172,9 +172,9 @@
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
             grid-template-rows: 1fr 1fr 1fr;
-            gap: 6px;
-            width: 150px;
-            height: 150px;
+            gap: 10px;
+            width: 260px;
+            height: 260px;
             margin: 0 auto;
         }
 
@@ -185,7 +185,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 42px;
             cursor: pointer;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
@@ -223,7 +223,7 @@
             grid-column: 2;
             grid-row: 2;
             background: rgba(255, 255, 255, 0.7);
-            font-size: 12px;
+            font-size: 20px;
         }
 
         /* Responsive design - Show mobile controls on touch devices */
@@ -263,12 +263,13 @@
             }
 
             .dpad {
-                width: 160px;
-                height: 160px;
+                width: 260px;
+                height: 260px;
+                gap: 10px;
             }
 
             .dpad-btn {
-                font-size: 24px;
+                font-size: 42px;
             }
 
             .loading-title {
@@ -299,13 +300,13 @@
             }
 
             .dpad {
-                width: 140px;
-                height: 140px;
-                gap: 6px;
+                width: 240px;
+                height: 240px;
+                gap: 9px;
             }
 
             .dpad-btn {
-                font-size: 22px;
+                font-size: 38px;
                 border-width: 2px;
             }
 
@@ -371,12 +372,12 @@
             }
             
             .dpad {
-                width: 100px;
-                height: 100px;
+                width: 180px;
+                height: 180px;
             }
             
             .dpad-btn {
-                font-size: 16px;
+                font-size: 32px;
             }
         }
 
@@ -400,6 +401,8 @@
             background-size: cover;
             position: relative;
             overflow: hidden;
+            width: 100%;
+            height: 100%;
         }
 
         /* Character sprites */
@@ -455,7 +458,7 @@
         }
 
         .bride-health {
-            top: calc(15% - 25px);
+            top: calc(15% + clamp(55px, 13vw, 90px));
             right: 10%;
             width: clamp(80px, 20vw, 120px);
             height: 12px;
@@ -470,8 +473,9 @@
             font-size: clamp(8px, 2vw, 10px);
             color: white;
             font-weight: bold;
-            text-shadow: 1px 1px 1px #000;
+            text-shadow: 1px 1px 2px #000, -1px -1px 2px #000;
             white-space: nowrap;
+            z-index: 10;
         }
 
         .groom-health .health-text {
@@ -480,7 +484,7 @@
         }
 
         .bride-health .health-text {
-            top: -18px;
+            bottom: -18px;
             left: 0;
         }
 
@@ -610,9 +614,9 @@
         /* Pokering throwing animation */
         .pokering {
             position: absolute;
-            width: 40px;
-            height: 40px;
-            font-size: 30px;
+            width: clamp(30px, 8vw, 40px);
+            height: clamp(30px, 8vw, 40px);
+            font-size: clamp(24px, 6vw, 30px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -630,12 +634,12 @@
 
         @keyframes throwPokering {
             0% {
-                transform: translate(0, 0) rotate(0deg);
+                transform: translate(-50%, -50%) rotate(0deg);
                 opacity: 1;
             }
 
             100% {
-                transform: translate(520px, -100px) rotate(360deg);
+                transform: translate(calc(-50% + var(--target-x, 0)), calc(-50% + var(--target-y, 0))) rotate(360deg);
                 opacity: 1;
             }
         }
@@ -646,32 +650,32 @@
 
         @keyframes pokeringWiggle {
             0% {
-                transform: translate(520px, -100px) rotate(0deg);
+                transform: translate(calc(-50% + var(--target-x, 0)), calc(-50% + var(--target-y, 0))) rotate(0deg);
                 opacity: 1;
             }
 
             20% {
-                transform: translate(520px, -100px) rotate(-10deg);
+                transform: translate(calc(-50% + var(--target-x, 0)), calc(-50% + var(--target-y, 0))) rotate(-10deg);
                 opacity: 1;
             }
 
             40% {
-                transform: translate(520px, -100px) rotate(10deg);
+                transform: translate(calc(-50% + var(--target-x, 0)), calc(-50% + var(--target-y, 0))) rotate(10deg);
                 opacity: 1;
             }
 
             60% {
-                transform: translate(520px, -100px) rotate(-5deg);
+                transform: translate(calc(-50% + var(--target-x, 0)), calc(-50% + var(--target-y, 0))) rotate(-5deg);
                 opacity: 1;
             }
 
             80% {
-                transform: translate(520px, -100px) rotate(5deg);
+                transform: translate(calc(-50% + var(--target-x, 0)), calc(-50% + var(--target-y, 0))) rotate(5deg);
                 opacity: 1;
             }
 
             100% {
-                transform: translate(520px, -100px) rotate(0deg);
+                transform: translate(calc(-50% + var(--target-x, 0)), calc(-50% + var(--target-y, 0))) rotate(0deg);
                 opacity: 0;
             }
         }
@@ -793,7 +797,7 @@
                 <div class="tap-instruction">Tap anywhere to start!</div>
                 <div class="tap-sound-reminder">
                     <span class="sound-icon">🔊</span> For the best experience,<br>
-                    turn off silent mode on your phone
+                    <b style="font-size:1.5em;">turn off silent mode on your device</b>
                 </div>
             </div>
         </div>

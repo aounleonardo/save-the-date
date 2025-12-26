@@ -892,7 +892,13 @@ class GameScene extends Phaser.Scene {
         argumentBtn.disabled = false;
         argumentBtn.style.opacity = '1';
         
+        // Show initial battle message with explanation
         this.updateBattleMessage('A wild Bride appeared! Help me charm her! 💕');
+        
+        // Show explanation after a short delay
+        setTimeout(() => {
+            this.updateBattleMessage('Similarly to any Pokemon game, soften the bride\'s heart so I can capture her! Use romantic moves to charm her! 💕');
+        }, 2500);
     }
     
     createExitTransition(callback) {
@@ -1043,40 +1049,135 @@ class GameScene extends Phaser.Scene {
     throwPokering() {
         const pokering = document.getElementById('pokering');
         const brideSprite = document.querySelector('.bride-sprite');
+        const groomSprite = document.querySelector('.groom-sprite');
+        const battleBackground = document.querySelector('.battle-background');
 
-        // Position pokering near the groom (Leonardo)
-        pokering.style.left = '140px';
-        pokering.style.bottom = '140px';
-        pokering.style.display = 'block';
+        if (!battleBackground || !brideSprite || !groomSprite) {
+            console.error('Battle elements not found');
+            return;
+        }
 
-        // Start the throwing animation
-        setTimeout(() => {
-            pokering.classList.add('pokering-throw');
-            this.updateBattleMessage('Leonardo threw a Pokering!');
-        }, 100);
+        // Get the actual positions of groom and bride sprites
+        const bgRect = battleBackground.getBoundingClientRect();
+        const groomRect = groomSprite.getBoundingClientRect();
+        const brideRect = brideSprite.getBoundingClientRect();
 
-        // After pokering reaches the bride, start wiggling
-        setTimeout(() => {
-            pokering.classList.remove('pokering-throw');
-            pokering.classList.add('pokering-wiggle');
-            this.updateBattleMessage('The Pokering is wiggling...');
-        }, 1500);
+        // Calculate center positions relative to battle background
+        // For X: distance from left edge of background
+        const groomCenterX = groomRect.left - bgRect.left + groomRect.width / 2;
+        const brideCenterX = brideRect.left - bgRect.left + brideRect.width / 2;
+        
+        // For Y: distance from top edge of background (since we'll use top positioning)
+        const groomCenterY = groomRect.top - bgRect.top + groomRect.height / 2;
+        const brideCenterY = brideRect.top - bgRect.top + brideRect.height / 2;
 
-        // After wiggling, show capture sequence
-        setTimeout(() => {
-            pokering.style.display = 'none';
-            pokering.classList.remove('pokering-wiggle');
+        // Calculate distance to travel
+        const deltaX = brideCenterX - groomCenterX;
+        const deltaY = brideCenterY - groomCenterY;
 
-            // Add capture success animation to bride sprite
-            brideSprite.classList.add('capture-success');
-            this.updateBattleMessage('💍 Gotcha! Ghinwa was caught! 💕');
+        // Store final position for wiggle animation
+        this.pokeringFinalX = deltaX;
+        this.pokeringFinalY = deltaY;
 
-            // Complete the capture after animation
-            setTimeout(() => {
-                this.captureBride();
-            }, 2000);
+        // Position pokering at groom's center position
+        pokering.style.left = groomCenterX + 'px';
+        pokering.style.top = groomCenterY + 'px';
+        pokering.style.bottom = 'auto'; // Clear bottom positioning
+        pokering.style.position = 'absolute';
+        pokering.style.display = 'flex';
+        
+        // Reset any previous transforms and classes
+        pokering.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+        pokering.classList.remove('pokering-throw', 'pokering-wiggle');
 
-        }, 3500);
+        // Start the throwing animation using JavaScript animation
+        this.updateBattleMessage('Leonardo threw a Pokering!');
+        
+        // Animate to bride position
+        const startTime = Date.now();
+        const duration = 1500; // 1.5 seconds
+        
+        const animate = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function (ease-out cubic)
+            const eased = 1 - Math.pow(1 - progress, 3);
+            
+            const currentX = deltaX * eased;
+            const currentY = deltaY * eased;
+            const rotation = 360 * progress;
+            
+            pokering.style.transform = `translate(calc(-50% + ${currentX}px), calc(-50% + ${currentY}px)) rotate(${rotation}deg)`;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                // Animation complete, start wiggling
+                this.startPokeringWiggle();
+            }
+        };
+        
+        requestAnimationFrame(animate);
+
+    }
+    
+    startPokeringWiggle() {
+        const pokering = document.getElementById('pokering');
+        const brideSprite = document.querySelector('.bride-sprite');
+        
+        if (!pokering) return;
+        
+        this.updateBattleMessage('The Pokering is wiggling...');
+        
+        // Get final position from stored values
+        const finalX = this.pokeringFinalX || 0;
+        const finalY = this.pokeringFinalY || 0;
+        
+        // Add smooth CSS transition for wiggle
+        pokering.style.transition = 'transform 0.15s ease-in-out';
+        
+        // Smooth wiggle animation using requestAnimationFrame
+        const startTime = Date.now();
+        const wiggleDuration = 2000; // 2 seconds total
+        const wiggleAmplitude = 12; // degrees
+        const wiggleFrequency = 8; // wiggles per second
+        
+        const animateWiggle = () => {
+            const elapsed = Date.now() - startTime;
+            const progress = elapsed / wiggleDuration;
+            
+            if (progress >= 1) {
+                // Wiggling complete, show capture sequence
+                pokering.style.transition = 'opacity 0.3s ease';
+                pokering.style.opacity = '0';
+                
+                setTimeout(() => {
+                    pokering.style.display = 'none';
+                    
+                    // Add capture success animation to bride sprite
+                    if (brideSprite) {
+                        brideSprite.classList.add('capture-success');
+                    }
+                    this.updateBattleMessage('💍 Gotcha! Ghinwa was caught! 💕');
+
+                    // Complete the capture after animation
+                    setTimeout(() => {
+                        this.captureBride();
+                    }, 2000);
+                }, 300);
+                return;
+            }
+            
+            // Smooth sine wave for natural wiggle motion
+            const angle = Math.sin(elapsed * wiggleFrequency * Math.PI / 1000) * wiggleAmplitude;
+            
+            pokering.style.transform = `translate(calc(-50% + ${finalX}px), calc(-50% + ${finalY}px)) rotate(${angle}deg)`;
+            
+            requestAnimationFrame(animateWiggle);
+        };
+        
+        requestAnimationFrame(animateWiggle);
     }
 
         captureBride() {
@@ -1144,13 +1245,20 @@ class GameScene extends Phaser.Scene {
     }
 
         showMessage(message) {
+        // Make font size responsive based on screen size
+        const isMobile = this.game.isMobile || window.innerWidth <= 768;
+        const fontSize = isMobile ? '11px' : '15px';
+        const padding = isMobile ? { x: 7, y: 3 } : { x: 9, y: 4 };
+        const strokeThickness = isMobile ? 2 : 3;
+        
         const messageText = this.add.text(this.groom.x, this.groom.y - 80, message, {
-            fontSize: '16px',
+            fontSize: fontSize,
             fill: '#ffffff',
             stroke: '#000000',
-            strokeThickness: 3,
+            strokeThickness: strokeThickness,
             backgroundColor: '#000000',
-            padding: { x: 10, y: 5 }
+            padding: padding,
+            wordWrap: { width: isMobile ? this.cameras.main.width * 0.75 : 380 }
         });
         messageText.setOrigin(0.5);
         messageText.setDepth(10); // Always on top
@@ -1178,14 +1286,21 @@ class GameScene extends Phaser.Scene {
     }
     
     showPermanentMessage(message) {
+        // Make font size responsive based on screen size
+        const isMobile = this.game.isMobile || window.innerWidth <= 768;
+        const fontSize = isMobile ? '13px' : '20px';
+        const padding = isMobile ? { x: 12, y: 6 } : { x: 18, y: 8 };
+        const strokeThickness = isMobile ? 2 : 3;
+        
         const messageText = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, message, {
-            fontSize: '24px',
+            fontSize: fontSize,
             fill: '#ffffff',
             stroke: '#000000',
-            strokeThickness: 4,
+            strokeThickness: strokeThickness,
             backgroundColor: '#000000',
-            padding: { x: 20, y: 10 },
-            align: 'center'
+            padding: padding,
+            align: 'center',
+            wordWrap: { width: isMobile ? this.cameras.main.width * 0.85 : 550 }
         });
         messageText.setOrigin(0.5);
         messageText.setDepth(1000); // Very high depth to be on top
