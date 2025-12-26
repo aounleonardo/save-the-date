@@ -45,6 +45,29 @@
             overflow: hidden;
         }
 
+        /* Desktop: Fixed size to fit in one screen */
+        @media (min-width: 769px) {
+            body {
+                justify-content: center;
+                padding: 10px;
+            }
+
+            #gameContainer {
+                max-width: 800px;
+                width: 800px;
+                height: 600px;
+                flex-shrink: 0;
+            }
+
+            h1 {
+                margin-bottom: 10px;
+            }
+
+            #controls {
+                margin-top: 10px;
+            }
+        }
+
         #controls {
             margin-top: 10px;
             color: white;
